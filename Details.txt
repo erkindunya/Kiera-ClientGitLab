@@ -1,0 +1,122 @@
+- Dashboard
+    - basic data is being pulled back from the Comos DB
+    - SQL Queries
+        - Get all messages for a conversation = SELECT c.text FROM c WHERE c.conversation.id = <conversationId>
+    - Updates
+        - Pagination Library
+        - Graphs Library
+- UI Update
+
+- PPTP
+
+- Autocomplete (Cognitive Api)
+
+- Previous Commands
+    - Issue where ShellContainer is updated on onKeyPress, due to this it does not detect arrow keys
+    - Look about changing this to use onKeyPress and submit this to the github as an update
+- Q & A importer
+
+- Mic for mobile 
+
+- Improve help
+
+- Azure Ad Oauth
+
+- Improve validation on phone number. Maybe give an example of what the format should be.
+
+- Updating NPM modules
+    - Issue when updating to new 0.11.4 botframework-webchat the postback bug is reintroduced into the system
+
+- LUIS Training
+    - max = 53 (Create Account)
+    - min = 4  (Disable Account)
+
+- Generic Functions
+    - Turn the WorkActityDialog more generic to handle an object / array of business units & work actitivies
+    - Turn the repeat dialog into a function that takes 1 param for the object that needs to be checked
+
+Kiera:
+    LUIS
+    Bing Voice
+    Bot Framework
+    SharePoint
+
+
+PTP: 
+    - Create
+        - Kier Division
+            - Construction North
+            - Construction South
+            - Infrastructure
+            - Group
+            - Living
+        
+        - Business Unit
+            - Construction North
+                - Infrastructure - South East
+                - Infrastructure - South West
+                - Infrastructure - North East
+                - Infrastructure - North West
+            
+            - Construction South
+                - Construction South - Major Projects
+                - Construction South - London
+                - Construction South - Southern
+                - Construction South - Western and Wales
+
+            - Infrastructure
+                - Infrastructure
+
+            - Group
+                - Group - Group Services
+
+            - Living
+                - Living - SW and Southern
+                - Living - Central and Central South
+                - Living - Eastern
+                - Living - North West
+                - Living - Yorkshire and North East
+        
+        - Title: Text
+        - Description: Text
+        - Estimated Value: Value
+        - Project Administrator: Names or Email Addresses
+        - PTPN Approved in Kier Docs: Yes / No
+
+    - Delegation / Delegate Tasks / Reverse Delegation
+        - Title
+        - Start Date
+        - End Date
+        - Delegate From: Email
+        - Delegate To: Email
+        - Comments
+        - Current Site Only: Bool
+        - Cancelled Delegation: Bool
+
+    - Look up Queries (Who is Beckley Court / 61 this assigned to)
+        - Query the Projects list (https://uat-ext.kier.group/sites/KPC/Lists/Projects/AllItems.aspx)
+        - This will then pull out the deserved column (PTPN, PTPState)
+        - If this is assigned to anyone then this will make a look up on the PTP Approvers list (https://uat-ext.kier.group/sites/KPC/Lists/PTP%20Approvers/AllItems.aspx)
+        - This will then return the name to the user.
+
+
+
+
+- Live Deployment
+    - Staging becomes Live
+    - Create a new staging 
+    - Create a new db for Live
+    - CORS
+    - Column names (FBA User Request)
+    - Workflow Deployment
+    - Create / export lists to live
+    - Enable horizontal scaling
+    - Cosmos db change to unlimited storage incase of rapid growth
+    - Enable application insights
+
+
+- TODO:
+    - Add params to Harmon.ie so you can pass the machine and user name at the first instance.
+    - Harmon.ie is sending 'Sorry, my bot code is having an issue.'
+    - Speak to Enver about some JS code that is posting off twice.
+    - Check the Assign take to approve event in KPC/Projects workflow

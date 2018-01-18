@@ -1,0 +1,151 @@
+/// <reference path ="../node_modules/@types/jquery/index.d.ts" />
+import { SharePoint } from './SharePoint';
+import * as BotChat from 'botframework-webchat';
+import FbaEvents from './FbaEvents';
+import SearchEvents from './SearchEvents';
+import * as CognitiveServices from 'botframework-webchat/CognitiveServices';
+import swal from 'sweetalert2';
+
+export class KieraBot {
+    botConnection: BotChat.DirectLine;
+    speechOptions: BotChat.SpeechOptions;
+    botUser: any;
+    userId: string;
+    public isInitialised: boolean = false;
+
+    constructor() {
+        this.botConnection = new BotChat.DirectLine({
+            secret: 'oCx5Pd_G9OQ.cwA.ZTc.kOI4BcVwzJNfokl651HPhLueIXCO0rjkoMAUOE1D0ak'
+            // secret: 'kfWac62Fmic.cwA.xSk.zzRLxsumU1cMyFLOpuEIE19XX92kl7D4o5UMCZxSnOk'
+        });
+    }
+
+    public AddEvents(events: [{ name: string, action: (message: BotChat.EventActivity) => void }]): void {
+        events.forEach(event => {
+            event.name.split('|').forEach(name => {
+                this.AddEvent(name, event.action);
+            });
+        });
+    }
+
+    public AddEvent(name: string, action: (message: BotChat.EventActivity) => void): void {
+        this.botConnection.activity$
+            .filter((message, index) => {
+                if (message.type === "event" && message.name == name)
+                    return true;
+                return false;
+            })
+            .subscribe(action.bind(this));
+    }
+
+    public SendEvent(name: string, data: any): void {
+        this.botConnection
+            .postActivity({
+                type: "event",
+                name: name,
+                value: data,
+                from: this.botUser
+            })
+            .subscribe(function (message) {
+                // do nothing
+            });
+    }
+
+    public PreviousCommand(index: number, data: any)
+    {
+        if(!data)
+            data = [];
+
+        return data[index];
+    }
+
+    public async InitChat(): Promise<void> {
+        var user = await SharePoint.GetCurrentUser();
+        var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/sites/SHEA");
+        var permissionsFba = await SharePoint.GetListPermissions('FBA User Request');
+        var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList');
+        console.log(permissionsProcurement, permissionsFba, siteCreation);
+        this.speechOptions = {
+            speechRecognizer: new CognitiveServices.SpeechRecognizer({ subscriptionKey: '2c4a1ee3bd624d05893a7a6f04a6dfea' }),
+            speechSynthesizer: new CognitiveServices.SpeechSynthesizer({
+                gender: CognitiveServices.SynthesisGender.Female,
+                subscriptionKey: '2c4a1ee3bd624d05893a7a6f04a6dfea',
+                voiceName: 'Microsoft Server Speech Text to Speech Voice (en-US, JessaRUS)'
+            })
+        }
+        this.botUser = { id: user.UserId.NameId, name: user.Title };
+        this.userId = user.Id;
+
+        BotChat.App({
+            botConnection: this.botConnection,
+            user: this.botUser,
+            bot: { id: 'KieraBot', name: 'Kiera' },
+            speechOptions: this.speechOptions
+        }, document.getElementById("bot"));
+
+        //resolve enter send bug
+        if(!buffer) var buffer = [];       
+        var index = 0;	
+        $('.wc-suggested-actions .scroll').click(function (event) {
+            event.preventDefault();
+        });
+        $('.wc-shellinput').keydown(function (key) {
+            if (key.keyCode === 13) { //enter key
+				buffer.push( $('.wc-shellinput').val() );
+				index = buffer.length - 1;
+                // $('.wc-mic').addClass('hidden');
+                // $('.wc-send').removeClass('hidden');
+                $('.wc-send').click();
+                key.preventDefault();
+            }
+			if(key.keyCode === 38 || key.keyCode === 191) //up arrow - unlimited text buffer update to add this to handle only 10 and to swap out the last entry
+            {
+				$('.wc-shellinput').val(buffer[index]);
+                $('.wc-shellinput').attr('value', buffer[index]);
+                $('.wc-mic').addClass('hidden');
+                $('.wc-send').removeClass('hidden');
+                index--;
+
+				if(index < 0)
+					index = buffer.length - 1;
+            }
+        });
+
+        this.SendEvent('welcome', {
+            'FBA User Request': permissionsFba,
+            'ExternalEmployeeRegistration': permissionsProcurement,
+            'SiteCollectionCreationList': siteCreation
+        });
+        this.isInitialised = true;
+    }
+}
+
+$(document).ready(function () {
+    (<any>window).SP.SOD.executeFunc('sp.js', 'SP.ClientContext', function () {
+        let bot = new KieraBot();
+        bot.AddEvents(FbaEvents(bot));
+        bot.AddEvents(SearchEvents(bot));
+        bot.InitChat();
+    });
+
+    $('.feedback-button').click(function (event) {
+        event.preventDefault();
+        swal({
+            title: 'Feedback',
+            text: 'Any feedback is appreciated and will be used to improve Kiera in the future.',
+            input: 'textarea',
+            confirmButtonText: 'Send Feedback',
+            showCloseButton: true
+          })
+          .then(feedback => {
+            if(!feedback || !feedback.value || feedback.value == "") return false;
+            SharePoint.CreateListItem('Kiera Feedback', {
+                '__metadata': { 'type': `${SharePoint.GetListItemType('Kiera Feedback')}` },
+                'Title': '',
+                'Feedback': feedback.value
+            }, '/kiera').then((result) => {
+                swal('Feedback submitted.');
+            });
+          });
+    });
+});

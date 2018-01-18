@@ -1,0 +1,74 @@
+<link href="./botchat.css" rel="stylesheet" />
+<link href="./botchat-fullwindow.css" rel="stylesheet" />
+
+<script src="./jquery.min.js"></script>
+
+<style>
+.ac-container [style="display: flex;"] {
+    flex-direction: column;
+}
+
+#bot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1500;
+}
+
+.feedback-button {
+    position: fixed;
+    top: 3px;
+    right: 3px;
+    z-index: 1501;
+}
+
+.format-markdown,
+.format-plain,
+.wc-shellinput {
+    font-family: "Segoe UI Local", "Segoe WP", "Segoe UI Web", "SkypeUISymbol", Tahoma, "Helvetica Neue", Helvetica, "Meiryo UI", Meiryo, Arial Unicode MS, sans-serif !important;
+    font-size: 12px !important;
+}
+
+.format-markdown ol li {
+    margin: 5px 0;
+}
+
+#bot .wc-header::after {
+    content: "Kiera";
+}
+#bot .wc-header span {
+    display: none;
+}
+.swal2-container {
+    z-index: 1502 !important;
+}
+</style>
+
+
+<div id="bot"></div>
+
+<script>
+    function openFeedback() {
+        // SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', {
+        //     url: "https://uat-ext.kier.co.uk/kiera/_layouts/15/listform.aspx?PageType=8&ListId=%7B8F2856E9%2DA7E8%2D408D%2D9AA6%2D7B3C32452789%7D&RootFolder=&IsDlg=1",
+        //     title: "Your Title",
+        //     allowMaximize: true,
+        //     showClose: true
+        // });
+        
+    }
+</script>
+<button class="feedback-button" type="button">Feedback</button>
+
+<script src="./bundle-test.js"></script>
+
+
+<script>
+    $('head').append('<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">');
+    window.resizeTo(500,700);
+</script>
