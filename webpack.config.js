@@ -12,14 +12,14 @@ module.exports = {
     entry: [
         'babel-polyfill',
         "./scripts/Kiera.ts",
-        "./styles/botchat.scss"
+        "./styles/main.scss"
     ],
     resolve: {
         modules: ['.', './node_modules'],
         extensions: [".ts", ".js"]
     },
     output: {
-        filename: "bundle-test.js"
+        filename: "./dist/bundle-test.js"
     },
     module: {
         rules: [
@@ -50,7 +50,7 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin({
-            filename: 'bundle-test.css',
+            filename: './dist/bundle-test.css',
             allChunks: true
           })
     ]
