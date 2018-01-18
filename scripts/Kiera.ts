@@ -83,6 +83,8 @@ export class KieraBot {
             speechOptions: this.speechOptions
         }, document.getElementById("bot"));
 
+        //stop send button submitting form
+        $('.wc-console button').prop('type', 'button');
         //resolve enter send bug
         if(!buffer) var buffer = [];       
         var index = 0;	
