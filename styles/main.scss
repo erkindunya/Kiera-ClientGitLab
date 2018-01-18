@@ -1,6 +1,7 @@
 @import 'botchat';
 @import 'botchat-fullwindow';
 @import 'feedback';
+@import 'help';
 
 .ac-container [style="display: flex;"] {
     flex-direction: column;
@@ -29,12 +30,20 @@
     margin: 5px 0;
 }
 
-#bot .wc-header::after {
-    content: "Kiera";
+#bot {
+    .wc-header {
+        text-align: center;
+
+        &::after {
+            content: "Kiera";
+        }
+
+        span {
+            display: none;
+        }
+    }
 }
-#bot .wc-header span {
-    display: none;
-}
+
 .swal2-container {
     z-index: 1502 !important;
 }

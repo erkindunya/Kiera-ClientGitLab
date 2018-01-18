@@ -5,23 +5,79 @@
 
 <div id="bot"></div>
 
-<script>
-    function openFeedback() {
-        // SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', {
-        //     url: "https://uat-ext.kier.co.uk/kiera/_layouts/15/listform.aspx?PageType=8&ListId=%7B8F2856E9%2DA7E8%2D408D%2D9AA6%2D7B3C32452789%7D&RootFolder=&IsDlg=1",
-        //     title: "Your Title",
-        //     allowMaximize: true,
-        //     showClose: true
-        // });
-        
-    }
-</script>
 <button class="feedback-button" type="button">Feedback</button>
 
-<script src="./bundle-test.js"></script>
+<button class="help-button" type="button">Help</button>
 
+<div id="help-button-popup">
+    <div class="help-popup">
+        <p>Welcome to Kiera. Designed to help you perform common SharePoint actions quickly and easily. Generally we recommend
+            talking to Kiera as naturally as possible - if at any point you want to cancel what you are doing, or Kiera gets
+            confused, type "exit".</p>
+        <p>If you have any comments or suggestions then we're always happy to hear from you via the Feedback button at the top
+            right.</p>
+        <h3>Topics</h3>
+        <p>Kiera is a SharePoint Bot and here are the areas s/he can help out with.</p>
+        <div class="acc-container">
+            <div class="acc-btn">
+                <h4 class="selected">External Accounts</h4>
+            </div>
+            <div class="acc-content open">
+                <div class="acc-content-inner">
+                    <p>An external account is one that can be used by non-Kier employees to access Kier SharePoint. The external
+                        person will be sent a username and password to log onto the system. You will then be able to manage
+                        thier access in the same way as you currently manage other users. There accounts can opnly be used
+                        to access SharePoint sites with https://ext.kier.co.uk or https://ext.kier.group at the beginning
+                        of the URL.</p>
+                    <p>Try asking Kiera to create an account to get started.</p>
+                </div>
+            </div>
 
-<script>
-    $('head').append('<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">');
-    window.resizeTo(500,700);
-</script>
+            <div class="acc-btn">
+                <h4>User Permissions</h4>
+            </div>
+            <div class="acc-content">
+                <div class="acc-content-inner">
+                    <p>I can add and remove users from groups on your SharePoint sites.</p>
+                    <p>Try entering "add user to group" to get started.</p>
+                </div>
+            </div>
+
+            <div class="acc-btn">
+                <h4>SharePoint Site Creation</h4>
+            </div>
+            <div class="acc-content">
+                <div class="acc-content-inner">
+                    <p>I can create SharePoint sites.</p>
+                    <p>Try entering "create site" to get started.</p>
+                </div>
+            </div>
+
+            <div class="acc-btn">
+                <h4>Knowledge Base</h4>
+            </div>
+            <div class="acc-content">
+                <div class="acc-content-inner">
+                    <p>I can answer questions related to SharePoint and Change Management.</p>
+                    <p>Try asking "What is SharePoint?"</p>
+                </div>
+            </div>
+
+            <div class="acc-btn">
+                <h4>Harmon.ie</h4>
+            </div>
+            <div class="acc-content">
+                <div class="acc-content-inner">
+                    <p>I can deploy the Harmon.ie Outlook plug in to computers on the Kier domain.</p>
+                    <p>Try entering "deploy Harmon.ie to a machine"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./bundle-test.js"></script>
+
+    <script>
+        $('head').append('<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">');
+        window.resizeTo(500, 700);
+    </script>

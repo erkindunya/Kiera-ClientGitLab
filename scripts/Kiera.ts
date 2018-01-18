@@ -98,16 +98,39 @@ export class KieraBot {
                 $('.wc-send').click();
                 key.preventDefault();
             }
-			if(key.keyCode === 38 || key.keyCode === 191) //up arrow - unlimited text buffer update to add this to handle only 10 and to swap out the last entry
-            {
-				$('.wc-shellinput').val(buffer[index]);
-                $('.wc-shellinput').attr('value', buffer[index]);
-                $('.wc-mic').addClass('hidden');
-                $('.wc-send').removeClass('hidden');
-                index--;
+        });
 
-				if(index < 0)
-					index = buffer.length - 1;
+        // help dialog
+
+        $('.help-button').click(function (event) {
+            event.preventDefault();
+            swal({
+              title: 'Kiera Help',
+              html: $("#help-button-popup").html(),
+              showCloseButton: true,
+              grow: 'fullscreen',
+              confirmButtonText: 'Close'
+            });
+        });
+        
+        //help accordion
+        var animTime = 300;
+        var clickPolice = false;
+        
+        $(document).on('touchstart click', '.acc-btn', function(){
+            if(!clickPolice){
+                clickPolice = true;
+                
+                var currIndex = $(this).index('.acc-btn'),
+                    targetHeight = $('.acc-content-inner').eq(currIndex).outerHeight();
+            
+                $('.acc-btn h4').removeClass('selected');
+                $(this).find('h4').addClass('selected');
+                
+                $('.acc-content').stop().animate({ height: 0 }, animTime);
+                $('.acc-content').eq(currIndex).stop().animate({ height: targetHeight }, animTime);
+        
+                setTimeout(function(){ clickPolice = false; }, animTime);
             }
         });
 
