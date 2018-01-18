@@ -1,0 +1,40 @@
+@import 'botchat';
+@import 'botchat-fullwindow';
+@import 'feedback';
+
+.ac-container [style="display: flex;"] {
+    flex-direction: column;
+}
+
+#bot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1500;
+}
+
+.format-markdown,
+.format-plain,
+.wc-shellinput {
+    font-family: "Segoe UI Local", "Segoe WP", "Segoe UI Web", "SkypeUISymbol", Tahoma, "Helvetica Neue", Helvetica, "Meiryo UI", Meiryo, Arial Unicode MS, sans-serif !important;
+    font-size: 12px !important;
+}
+
+.format-markdown ol li {
+    margin: 5px 0;
+}
+
+#bot .wc-header::after {
+    content: "Kiera";
+}
+#bot .wc-header span {
+    display: none;
+}
+.swal2-container {
+    z-index: 1502 !important;
+}
