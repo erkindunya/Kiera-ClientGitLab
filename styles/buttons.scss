@@ -1,0 +1,19 @@
+@import "includes/colors";
+
+.header-button {
+    color: $c01;
+    border-radius: 2px;
+    padding: 7px 10px;
+    border: 1px solid $c01;
+    font-size: 12px;
+    background-color: $c_brand;
+    cursor: pointer;
+    margin: 0;
+    font-weight: bold;
+
+    &:hover {
+        text-decoration: underline;
+        background-color: rgba($c00, 0.3);
+        border: 1px solid $c01;
+    }
+}

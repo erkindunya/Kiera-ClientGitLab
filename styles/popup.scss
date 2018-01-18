@@ -1,0 +1,11 @@
+@import "includes/colors";
+.swal2-popup {
+    
+    .swal2-title {
+        color: $c08;
+    }
+
+    .swal2-confirm.swal2-styled {
+        background-color: $c08 !important;
+    }
+}

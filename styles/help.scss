@@ -3,14 +3,6 @@
 }
 
 .help-button {
-    color: white;
-    border-radius: 2px;
-    padding: 7px 10px;
-    border: 1px solid #ababab;
-    font-size: 14px;
-    color: #444;
-    background-color: #a4fcc5;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     position: fixed;
     top: 3px;
     left: 3px;
@@ -37,8 +29,8 @@
     margin:0 auto;
     padding:20px 25px;
     cursor:pointer;
-    background:#34495E;
-    border-bottom:1px solid #2C3E50;
+    background:$c_brand;
+    border-bottom:1px solid $c08;
 }
 
 .acc-content {
@@ -46,7 +38,7 @@
     width:100%;
     margin:0 auto;
     overflow:hidden;
-    background:#2C3E50;
+    background:$c01;
 }
 
 .acc-content-inner {
@@ -64,10 +56,10 @@
 
 .acc-container p { 
     /*font:400 16px/24px 'Lato', sans-serif;*/
-    color:#798795;
+    color: $c08;
     font-size: 14px;
 }
 
 .acc-container .selected {
-    color:#1ABC9C;
+    font-weight: bold;
 }
