@@ -83,17 +83,8 @@ export class KieraBot {
             speechOptions: this.speechOptions
         }, document.getElementById("bot"));
 
-        //stop send button submitting form
-        $('.wc-console button').prop('type', 'button');
-        //resolve enter send bug
-        $('.wc-suggested-actions .scroll').click(function (event) {
+        $("#aspnetForm").submit(function(event){
             event.preventDefault();
-        });
-        $('.wc-shellinput').keydown(function (key) {
-            if (key.keyCode === 13) { //enter key
-                $('.wc-send').click();
-                key.preventDefault();
-            }
         });
 
         // help dialog
