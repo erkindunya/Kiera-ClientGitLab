@@ -86,17 +86,11 @@ export class KieraBot {
         //stop send button submitting form
         $('.wc-console button').prop('type', 'button');
         //resolve enter send bug
-        if(!buffer) var buffer = [];       
-        var index = 0;	
         $('.wc-suggested-actions .scroll').click(function (event) {
             event.preventDefault();
         });
         $('.wc-shellinput').keydown(function (key) {
             if (key.keyCode === 13) { //enter key
-				buffer.push( $('.wc-shellinput').val() );
-				index = buffer.length - 1;
-                // $('.wc-mic').addClass('hidden');
-                // $('.wc-send').removeClass('hidden');
                 $('.wc-send').click();
                 key.preventDefault();
             }
