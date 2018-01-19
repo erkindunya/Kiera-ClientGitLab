@@ -6,12 +6,20 @@
 @import 'feedback';
 @import 'help';
 
+button {
+    min-width: auto; /* Fix button sizing */
+}
+
 .wc-card button {
     margin: 0; /* Fix cards */
 }
 
 .ac-container [style="display: flex;"] {
     flex-direction: column;
+}
+
+.ac-container.ac-selectable {
+    cursor: pointer;
 }
 
 #bot {
