@@ -14,7 +14,7 @@ module.exports = merge(common, {
             allChunks: true
         }),
         new webpack.DefinePlugin({
-            DIRECTLINE_SECRET: JSON.stringify('kfWac62Fmic.cwA.xSk.zzRLxsumU1cMyFLOpuEIE19XX92kl7D4o5UMCZxSnOk'),
+            DIRECTLINE_SECRET: JSON.stringify('uVAIRSveWlA.cwA.rC0.86qtVL1RV8zm3Hh7p3I7RZE9j5eddaK-G_l9lmFOXI8'),
         })
     ]
 });
