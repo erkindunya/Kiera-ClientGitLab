@@ -48,6 +48,7 @@ button {
 #bot {
     .wc-header {
         text-align: center;
+        box-sizing: content-box; /* for live to overwrite masterpage */
 
         &::after {
             content: "Kiera";
