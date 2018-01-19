@@ -6,6 +6,10 @@
 @import 'feedback';
 @import 'help';
 
+.wc-card button {
+    margin: 0;
+}
+
 .ac-container [style="display: flex;"] {
     flex-direction: column;
 }
@@ -45,8 +49,4 @@
             display: none;
         }
     }
-}
-
-.swal2-container {
-    z-index: 1502 !important;
 }
