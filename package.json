@@ -4,7 +4,8 @@
   "description": "",
   "main": "kiera.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack --watch --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,8 @@
     "sass-loader": "^6.0.6",
     "ts-loader": "^3.0.5",
     "typescript": "^2.5.3",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "webpack-merge": "^4.1.1"
   },
   "dependencies": {
     "@microsoft/sp-http": "^1.4.0",

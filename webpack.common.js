@@ -1,5 +1,4 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
 var babelOptions = {
     "presets": [
         "es2016",
@@ -17,9 +16,6 @@ module.exports = {
     resolve: {
         modules: ['.', './node_modules'],
         extensions: [".ts", ".js"]
-    },
-    output: {
-        filename: "./dist/bundle-test.js"
     },
     module: {
         rules: [
@@ -47,11 +43,5 @@ module.exports = {
                 loader: ExtractTextPlugin.extract(['css-loader', 'sass-loader'])
             }
         ]
-    },
-    plugins: [
-        new ExtractTextPlugin({
-            filename: './dist/bundle-test.css',
-            allChunks: true
-          })
-    ]
+    }
 };

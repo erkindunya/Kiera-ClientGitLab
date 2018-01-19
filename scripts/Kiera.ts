@@ -6,6 +6,9 @@ import SearchEvents from './SearchEvents';
 import * as CognitiveServices from 'botframework-webchat/CognitiveServices';
 import swal from 'sweetalert2';
 
+// webpack provided
+declare var DIRECTLINE_SECRET: string;
+
 export class KieraBot {
     botConnection: BotChat.DirectLine;
     speechOptions: BotChat.SpeechOptions;
@@ -15,8 +18,7 @@ export class KieraBot {
 
     constructor() {
         this.botConnection = new BotChat.DirectLine({
-            secret: 'oCx5Pd_G9OQ.cwA.ZTc.kOI4BcVwzJNfokl651HPhLueIXCO0rjkoMAUOE1D0ak'
-            // secret: 'kfWac62Fmic.cwA.xSk.zzRLxsumU1cMyFLOpuEIE19XX92kl7D4o5UMCZxSnOk'
+            secret: DIRECTLINE_SECRET
         });
     }
 
