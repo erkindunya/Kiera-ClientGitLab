@@ -190,8 +190,25 @@ export class SharePoint {
     public static async GetUserLoginName(email: string, prefix: string = ''): Promise<string> {
         // let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`);
         let user = email.split('@')[0].toLowerCase();
-        let result = await this.Get(`/_vti_bin/listdata.svc/UserInformationList?$filter=substringof('${user}',tolower(Account))`, prefix);
-        return result.d.results[0].Account;
+        // let result = await this.Get(`/_vti_bin/listdata.svc/UserInformationList?$filter=substringof('${user}',tolower(Account))`, prefix);
+        let result = await this.Post(`/_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.clientPeoplePickerSearchUser`,
+            {
+                'queryParams':{  
+                    '__metadata':{  
+                        'type':'SP.UI.ApplicationPages.ClientPeoplePickerQueryParameters'  
+                    },  
+                    'AllowEmailAddresses':true,  
+                    'AllowMultipleEntities':false,  
+                    'AllUrlZones':false,  
+                    'MaximumEntitySuggestions':50,  
+                    'PrincipalSource':15,  
+                    'PrincipalType': 1,  
+                    'QueryString': email,
+                    'Required':false
+                } 
+            }
+        );
+        return JSON.parse(result.d.ClientPeoplePickerSearchUser)[0].Key;
     }
 
     public static async GetUserGroups(loginName: string, prefix: string = ''): Promise<any> {
