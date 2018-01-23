@@ -66,7 +66,8 @@ export class KieraBot {
         var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/kiera");
         var permissionsFba = await SharePoint.GetListPermissions('FBA User Request', '/kiera');
         var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList', '/kiera');
-        console.log(permissionsProcurement, permissionsFba, siteCreation);
+        var harmonieInstall = await SharePoint.GetListPermissions('harmon.ie', '/kiera');
+       console.log(permissionsProcurement, permissionsFba, siteCreation, harmonieInstall);
         this.speechOptions = {
             speechRecognizer: new CognitiveServices.SpeechRecognizer({ subscriptionKey: '2c4a1ee3bd624d05893a7a6f04a6dfea' }),
             speechSynthesizer: new CognitiveServices.SpeechSynthesizer({
