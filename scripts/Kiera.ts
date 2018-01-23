@@ -63,9 +63,9 @@ export class KieraBot {
 
     public async InitChat(): Promise<void> {
         var user = await SharePoint.GetCurrentUser();
-        var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/sites/SHEA");
-        var permissionsFba = await SharePoint.GetListPermissions('FBA User Request');
-        var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList');
+        var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/kiera");
+        var permissionsFba = await SharePoint.GetListPermissions('FBA User Request', '/kiera');
+        var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList', '/kiera');
         console.log(permissionsProcurement, permissionsFba, siteCreation);
         this.speechOptions = {
             speechRecognizer: new CognitiveServices.SpeechRecognizer({ subscriptionKey: '2c4a1ee3bd624d05893a7a6f04a6dfea' }),
