@@ -8,6 +8,8 @@ var _spPageContextInfo = (<any>window)._spPageContextInfo;
 var SP = (<any>window).SP;
 var UpdateFormDigest = (<any>window).UpdateFormDigest;
 
+declare var ROOT_SITES: string[];
+
 export class SharePoint {
 
     private static Prefix: string = 'i:0#.w|';
@@ -85,26 +87,41 @@ export class SharePoint {
         }));
     }
 
-    public static async GetSubSites(prefix: string = '') {
-        let result = await this.Get(`${prefix}/_api/search/query?querytext='contentclass:sts_site'`, prefix);
+    public static async GetSubSites() {
         let sites = [];
-        result.d.query.PrimaryQueryResult.RelevantResults.Table.Rows.results.forEach(function (searchItem) {
-            let item = searchItem.Cells.results;
-            sites.push({
-                WorkId: item[2].Value,
-                Title: item[3].Value,
-                Path: item[6].Value
-            });
-        });
-        result = await this.Get(`https://uat-content-mykier/_api/search/query?querytext='contentclass:sts_site'`, 'https://uat-content-mykier');
-        result.d.query.PrimaryQueryResult.RelevantResults.Table.Rows.results.forEach(function (searchItem) {
-            let item = searchItem.Cells.results;
-            sites.push({
-                WorkId: item[2].Value,
-                Title: item[3].Value,
-                Path: item[6].Value
-            });
-        });
+        for(let site of ROOT_SITES) {
+            try {
+                let result = await this.Get(`${site}/_api/search/query?querytext='contentclass:sts_site'`, site);
+                result.d.query.PrimaryQueryResult.RelevantResults.Table.Rows.results.forEach(function (searchItem) {
+                    let item = searchItem.Cells.results;
+                    sites.push({
+                        WorkId: item[2].Value,
+                        Title: item[3].Value,
+                        Path: item[6].Value
+                    });
+                });
+            } catch(error) {
+                console.log(`No access to ${site}`);
+            }
+        }
+        // let result = await this.Get(`/_api/search/query?querytext='contentclass:sts_site'`, '');
+        // result.d.query.PrimaryQueryResult.RelevantResults.Table.Rows.results.forEach(function (searchItem) {
+        //     let item = searchItem.Cells.results;
+        //     sites.push({
+        //         WorkId: item[2].Value,
+        //         Title: item[3].Value,
+        //         Path: item[6].Value
+        //     });
+        // });
+        // result = await this.Get(`https://uat-content-mykier/_api/search/query?querytext='contentclass:sts_site'`, 'https://uat-content-mykier');
+        // result.d.query.PrimaryQueryResult.RelevantResults.Table.Rows.results.forEach(function (searchItem) {
+        //     let item = searchItem.Cells.results;
+        //     sites.push({
+        //         WorkId: item[2].Value,
+        //         Title: item[3].Value,
+        //         Path: item[6].Value
+        //     });
+        // });
         return sites;
     }
 

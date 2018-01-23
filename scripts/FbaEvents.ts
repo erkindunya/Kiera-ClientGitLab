@@ -137,7 +137,6 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 		{
 			name: 'getsites|getusersites|getsitecollections|getsubsite',
 			action: async (message) => {
-				let urlPrefix = message.value.UrlPrefix || "";
 				let currentEmail = await SharePoint.GetCurrentUserEmail();
 				currentEmail = currentEmail.Email;
 				let email = message.value.Email || currentEmail;
@@ -145,7 +144,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				let teamName = message.value.TeamName;
 				SharePoint.GetUserLoginName(email).then((loginName) => {
 					if (loginName) {
-						SharePoint.GetSubSites(urlPrefix).then(sites => {
+						SharePoint.GetSubSites().then(sites => {
 							if (sites) {
 								kiera.SendEvent(actionName, {
 									LoginName: loginName,
@@ -153,7 +152,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 									TeamName: teamName
 								});
 							} else {
-								kiera.SendEvent('nositesfound', urlPrefix);
+								kiera.SendEvent('nositesfound', '');
 							}
 						}).catch(error => {
 							kiera.SendEvent('error', error);
