@@ -65,9 +65,9 @@ export class KieraBot {
         var user = await SharePoint.GetCurrentUser();
         var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/kiera");
         var permissionsFba = await SharePoint.GetListPermissions('FBA User Request', '/kiera');
-        var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList', '/kiera');
+        // var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList', '/kiera');
         var harmonieInstall = await SharePoint.GetListPermissions('harmon.ie', '/kiera');
-       console.log(permissionsProcurement, permissionsFba, siteCreation, harmonieInstall);
+       console.log(permissionsProcurement, permissionsFba, harmonieInstall);
         this.speechOptions = {
             speechRecognizer: new CognitiveServices.SpeechRecognizer({ subscriptionKey: '2c4a1ee3bd624d05893a7a6f04a6dfea' }),
             speechSynthesizer: new CognitiveServices.SpeechSynthesizer({
@@ -127,7 +127,7 @@ export class KieraBot {
         this.SendEvent('welcome', {
             'FBA User Request': permissionsFba,
             'ExternalEmployeeRegistration': permissionsProcurement,
-            'SiteCollectionCreationList': siteCreation
+            'Harmon.ie': harmonieInstall
         });
         this.isInitialised = true;
     }
