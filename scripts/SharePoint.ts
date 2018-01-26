@@ -277,7 +277,8 @@ export class SharePoint {
     }
 
     public static async GetWeb(url:string): Promise<string> {
-        return await this.Get(`_api/sp.web.getweburlfrompageurl(@v)?@v='${decodeURI(url)}'`);
+        let result = await this.Get(`/_api/sp.web.getweburlfrompageurl(@v)?@v='${decodeURI(url)}'`);
+        return result.d.GetWebUrlFromPageUrl;
     }
 
     public static async GetPageByFullUrl(url: string): Promise<any> {
