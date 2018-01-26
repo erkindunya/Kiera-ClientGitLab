@@ -15,10 +15,16 @@ export class SharePoint {
     private static Prefix: string = 'i:0#.w|';
     private static FilterPrefix: string = "?$";
 
+    private static ajax(options: any): Promise<any> {
+        return new Promise(function(resolve, reject) {
+          $.ajax(options).done(resolve).fail(reject);
+        });
+      }
+
     private static async Get(url: string, prefix: string = "", requiresDigest: boolean = false): Promise<any> {
         let formDigest = requiresDigest ? await this.GetFormDigest(prefix) : null;
         $.support.cors = true;
-        return await Promise.resolve($.ajax({
+        return this.ajax({
             url: url,
             method: 'GET',
             crossDomain: true,
@@ -28,13 +34,13 @@ export class SharePoint {
                 'Accept': 'application/json; odata=verbose',
                 'X-RequestDigest': formDigest
             }
-        }));
+        });
     }
 
     private static async Post(url: string, data: any, prefix: string = ""): Promise<any> {
         let formDigest = await this.GetFormDigest(prefix);
         $.support.cors = true;
-        return await Promise.resolve($.ajax({
+        return this.ajax({
             url: url,
             method: 'POST',
             data: JSON.stringify(data),
@@ -45,13 +51,13 @@ export class SharePoint {
                 'Accept': 'application/json; odata=verbose',
                 'X-RequestDigest': formDigest
             }
-        }));
+        });
     }
 
     private static async GetFormDigest(prefix: string): Promise<string> {
         if (prefix.startsWith('http')) {
             $.support.cors = true;
-            let result = await Promise.resolve($.ajax({
+            let result = await this.ajax({
                 url: prefix + "/_api/contextinfo",
                 method: 'POST',
                 crossDomain: true,
@@ -60,7 +66,7 @@ export class SharePoint {
                     'Content-Type': 'application/json; odata=verbose',
                     'Accept': 'application/json; odata=verbose'
                 }
-            }));
+            });
             return result.d.GetContextWebInformation.FormDigestValue as string;
         } else {
             UpdateFormDigest(prefix == "" ? "/" : prefix, _spFormDigestRefreshInterval);
@@ -71,7 +77,7 @@ export class SharePoint {
     private static async Merge(url: string, data: any, prefix: string = ""): Promise<any> {
         let formDigest = await this.GetFormDigest(prefix);
         $.support.cors = true;
-        return await Promise.resolve($.ajax({
+        return this.ajax({
             url: url,
             method: 'POST',
             data: JSON.stringify(data),
@@ -84,7 +90,7 @@ export class SharePoint {
                 "X-HTTP-Method": "MERGE",
                 "If-Match": "*"
             }
-        }));
+        });
     }
 
     public static async GetSubSites() {
@@ -268,6 +274,16 @@ export class SharePoint {
             searchItems.push(searchItem.Cells.results);
         });
         return searchItems;
+    }
+
+    public static async GetWeb(url:string): Promise<string> {
+        return await this.Get(`_api/sp.web.getweburlfrompageurl(@v)?@v='${decodeURI(url)}'`);
+    }
+
+    public static async GetPageByFullUrl(url: string): Promise<any> {
+        let web = await this.GetWeb(url);
+        let path = url.replace(/^.*\/\/[^\/]+/, '').split('?')[0];
+        return this.GetPageByPath(path, web);
     }
 
     public static async GetPageByPath(path: string, prefix: string): Promise<any> {

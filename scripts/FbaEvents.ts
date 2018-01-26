@@ -245,14 +245,17 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 		{
 			name: 'geturlgroups',
 			action: async (message) => {
+				let fullUrl = message.value.Path;
 				let path = message.value.Path.replace(/^.*\/\/[^\/]+/, '').split('?')[0];
-				let prefix = path.startsWith('/sites') ? path.split("/").slice(0, 3).join("/") : "";
-				console.log(path);
-				console.log(prefix);
+				// let prefix = path.startsWith('/sites') ? path.split("/").slice(0, 3).join("/") : "";
+				// console.log(path);
+				// console.log(prefix);
+				// let path = message.value.Path;
 				let email = message.value.Email;
 				try {
 					let loginName = await SharePoint.GetUserLoginName(email)
 					if (loginName) {
+						let prefix = await SharePoint.GetWeb(fullUrl);
 						let result = await SharePoint.GetPageByPath(path, prefix);
 						if (result) {
 							kiera.SendEvent('pagefound', path);
