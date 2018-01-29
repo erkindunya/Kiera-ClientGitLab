@@ -411,9 +411,16 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 		{
 			name: 'sendsupportrequest|logexitrequest',
 			action: async (message) => {
+				let content = message.value;
 				try {
-					message.conversation.id
-					let content = message.value;
+					let contentObj = JSON.parse(content);
+					content = contentObj.responseJSON.error.message.value;
+				}
+				catch (error){
+					// leave content
+				}
+
+				try {
 					let conversationId = message.conversation.id;
 					let item = {
 						"__metadata": {
