@@ -63,8 +63,8 @@ export class KieraBot {
 
     public async InitChat(): Promise<void> {
         var user = await SharePoint.GetCurrentUser();
-        var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/kiera");
-        var permissionsFba = await SharePoint.GetListPermissions('FBA User Request', '/kiera');
+        var permissionsProcurement = await SharePoint.GetListPermissions('ExternalEmployeeRegistration', "/sites/SHEA");
+        var permissionsFba = await SharePoint.GetListPermissions('FBA User Request', '');
         // var siteCreation = await SharePoint.GetListPermissions('SiteCollectionCreationList', '/kiera');
         var harmonieInstall = await SharePoint.GetListPermissions('harmon.ie', '/kiera');
        console.log(permissionsProcurement, permissionsFba, harmonieInstall);
