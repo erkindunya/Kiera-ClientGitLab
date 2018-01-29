@@ -428,7 +428,8 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 						},
 						"ConversationId": conversationId,
 						"Content": content,
-						"Title": (await SharePoint.GetCurrentUserEmail()).Email
+						"Title": (await SharePoint.GetCurrentUserEmail()).Email,
+						"Status": message.name == 'sendsupportrequest' ? "Open" : "Closed"
 					};
 					await SharePoint.CreateListItem('Support Request', item, '/kiera');
 					kiera.SendEvent('supportrequestsent', message.name);
