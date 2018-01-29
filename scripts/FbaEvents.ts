@@ -23,10 +23,10 @@ function createUser(user: any): Promise<any> {
 function modifyUser(user: any, userId: string, action: string): Promise<any> {
 	let newItem = {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` },
-		DeleteUser: action == 'delete' ? 'Delete' : '',
-		DisableUser: action == 'disable' ? 'Disable' : (action == 'enable' ? 'Enable' : ''),
-		LockUser: action == 'lock' ? 'Lock' : (action == 'unlock' ? 'Unlock' : ''),
-		ResetUser: action == 'reset' ? 'Reset' : ''
+		DeleteFBAUser: action == 'delete' ? 'Delete' : '',
+		DisableFBAUser: action == 'disable' ? 'Disable' : (action == 'enable' ? 'Enable' : ''),
+		LockFBAUser: action == 'lock' ? 'Lock' : (action == 'unlock' ? 'Unlock' : ''),
+		ResetFBAUserPassword: action == 'reset' ? 'Reset' : ''
 	};
 	return SharePoint.UpdateListItem(user.ListName, user.Id, newItem, user.UrlPrefix);
 }
