@@ -86,9 +86,9 @@ export class KieraBot {
             speechOptions: this.speechOptions
         }, document.getElementById("bot"));
 
-        $("#aspnetForm").submit(function(event){
-            event.preventDefault();
-        });
+        // $("#aspnetForm").submit(function(event){
+        //     event.preventDefault();
+        // });
 
         // help dialog
 
@@ -134,12 +134,12 @@ export class KieraBot {
 }
 
 $(document).ready(function () {
-    (<any>window).SP.SOD.executeFunc('sp.js', 'SP.ClientContext', function () {
+    // (<any>window).SP.SOD.executeFunc('sp.js', 'SP.ClientContext', function () {
         let bot = new KieraBot();
         bot.AddEvents(FbaEvents(bot));
         bot.AddEvents(SearchEvents(bot));
         bot.InitChat();
-    });
+    // });
 
     $('.feedback-button').click(function (event) {
         event.preventDefault();
@@ -158,6 +158,8 @@ $(document).ready(function () {
                 'Feedback': feedback.value
             }, '/kiera').then((result) => {
                 swal('Feedback submitted.');
+            }).catch((error) => {
+                swal('Feedback not submitted.', 'Please contact the bot team.', 'error');
             });
           });
     });
