@@ -363,21 +363,21 @@ export class SharePoint {
 
     public static async GetUser(email) {
         var endpoint = `/_api/web/siteusers?$filter=Email eq '${Helper.EmailCapitalize(email)}'`;
-        return await this.Get(null, endpoint, true);
+        return await this.Get('', endpoint, true);
     }
 
     public static async GetEmail(Id) {
         // https://uat-ext.kier.co.uk/_api/web/siteusers?$filter=Email%20eq%20%27Grant.Tapp@kier.co.uk%27
     }
 
-    public static async GetListFields(list: string) {
-        let endpoint = `/_api/web/lists/getbytitle('${list}')/items?`
-        let result = await this.Get(null, list, true);
-        return result.d.results[0];
+    public static async GetListFields(list: string, prefix: string, id: number) {
+        let endpoint = `${prefix}/_api/web/lists/getbytitle('${list}')/items(${id})`
+        let result = await this.Get(endpoint, prefix, true);
+        return result.d;
     }
 
-    public static async GetListField(list: string, field: string) {
-        let fields = await this.GetListFields(list);
+    public static async GetListField(prefix: string, list: string, field: string, id: number) {
+        let fields = await this.GetListFields(list, prefix, id);
         return fields[field];
     }
 
