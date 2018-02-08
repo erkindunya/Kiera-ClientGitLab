@@ -6,6 +6,10 @@ function updateUser(user: any): Promise<any> {
 	let newItem = $.extend({}, user, {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` }
 	});
+	if(newItem.ListName != 'ExternalEmployeeRegistration') {
+		newItem.EMail = newItem.Email;
+		delete newItem.Email;
+	}
 	delete newItem.ListName;
 	delete newItem.UrlPrefix;
 	return SharePoint.UpdateListItem(user.ListName, user.Id, newItem, user.UrlPrefix);
@@ -15,6 +19,10 @@ function createUser(user: any): Promise<any> {
 	let newItem = $.extend({}, user, {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` }
 	});
+	if(newItem.ListName != 'ExternalEmployeeRegistration') {
+		newItem.EMail = newItem.Email;
+		delete newItem.Email;
+	}
 	delete newItem.ListName;
 	delete newItem.UrlPrefix;
 	return SharePoint.CreateListItem(user.ListName, newItem, user.UrlPrefix);
