@@ -48,8 +48,13 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				let listName = message.value.ListName;
 				let urlPrefix = message.value.UrlPrefix;
 				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(result => {
-					if (result)
+					if (result){
+						if(listName != 'ExternalEmployeeRegistration') {
+							result.Email = result.EMail;
+							delete result.EMail;
+						}
 						kiera.SendEvent(listName == 'ExternalEmployeeRegistration' ? 'setprocurementuser' : 'setfbauser', result);
+					}
 					else
 						kiera.SendEvent('nouserfound', message.value.Email);
 				}).catch(error => {
@@ -66,7 +71,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(user => {
 					if (user) {
 						if (message.value.OldEmail != message.value.Email) {
-							SharePoint.GetListItemByField(listName, 'Email', message.value.Email, urlPrefix).then(user => {
+							SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', message.value.Email, urlPrefix).then(user => {
 								if (!user) {
 									delete message.value.OldEmail;
 									updateUser(message.value).then(result => {
