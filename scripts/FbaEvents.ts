@@ -39,7 +39,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				let email = message.value.Email;
 				let listName = message.value.ListName;
 				let urlPrefix = message.value.UrlPrefix;
-				SharePoint.GetListItemByField(listName, 'Email', email, urlPrefix).then(result => {
+				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(result => {
 					if (result)
 						kiera.SendEvent(listName == 'ExternalEmployeeRegistration' ? 'setprocurementuser' : 'setfbauser', result);
 					else
@@ -55,7 +55,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				let email = message.value.OldEmail;
 				let listName = message.value.ListName;
 				let urlPrefix = message.value.UrlPrefix;
-				SharePoint.GetListItemByField(listName, 'Email', email, urlPrefix).then(user => {
+				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(user => {
 					if (user) {
 						if (message.value.OldEmail != message.value.Email) {
 							SharePoint.GetListItemByField(listName, 'Email', message.value.Email, urlPrefix).then(user => {
@@ -94,7 +94,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				let listName = message.value.ListName;
 				let urlPrefix = message.value.UrlPrefix;
 				let email = message.value.Email;
-				SharePoint.GetListItemByField(listName, 'Email', email, urlPrefix).then(user => {
+				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(user => {
 					if (!user) {
 						createUser(message.value).then(result => {
 							kiera.SendEvent('createdfbauser', message.value.Email);
@@ -117,7 +117,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 				let urlPrefix = message.value.UrlPrefix;
 				let email = message.value.Email;
 				let actionName = message.name.replace('fbauser', '');
-				SharePoint.GetListItemByField(listName, 'Email', email, urlPrefix).then(user => {
+				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(user => {
 					if (user) {
 						user.ListName = listName;
 						user.UrlPrefix = urlPrefix;
