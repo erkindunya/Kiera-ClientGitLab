@@ -9,6 +9,7 @@ var SP = (<any>window).SP;
 var UpdateFormDigest = (<any>window).UpdateFormDigest;
 
 declare var ROOT_SITES: string[];
+declare var DEVELOPMENT: boolean;
 
 export class SharePoint {
 
@@ -327,6 +328,8 @@ export class SharePoint {
     }
 
     public static GetListItemType(listName: string) {
+        if(!DEVELOPMENT && listName == "FBA User Request")
+            return "SP.Data.NewFBAUserRequestListItem";
         return "SP.Data." + listName[0].toUpperCase().replace(" ", "_x0020_") + listName.substring(1).split(" ").join("_x0020_") + "ListItem";
     }
 

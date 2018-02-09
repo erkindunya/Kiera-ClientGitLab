@@ -22,7 +22,7 @@ export class KieraBot {
         });
     }
 
-    public AddEvents(events: [{ name: string, action: (message: BotChat.EventActivity) => void }]): void {
+    public AddEvents(events: { name: string, action: (message: BotChat.EventActivity) => void }[]): void {
         events.forEach(event => {
             event.name.split('|').forEach(name => {
                 this.AddEvent(name, event.action);

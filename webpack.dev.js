@@ -15,7 +15,8 @@ module.exports = merge(common, {
         }),
         new webpack.DefinePlugin({
             DIRECTLINE_SECRET: JSON.stringify('oCx5Pd_G9OQ.cwA.ZTc.kOI4BcVwzJNfokl651HPhLueIXCO0rjkoMAUOE1D0ak'),
-            ROOT_SITES: JSON.stringify(['', 'https://uat-content-mykier'])
+            ROOT_SITES: JSON.stringify(['', 'https://uat-content-mykier']),
+            DEVELOPMENT: JSON.stringify(false)            
         })
     ]
 });

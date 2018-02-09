@@ -39,7 +39,7 @@ function modifyUser(user: any, userId: string, action: string): Promise<any> {
 	return SharePoint.UpdateListItem(user.ListName, user.Id, newItem, user.UrlPrefix);
 }
 
-let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.EventActivity) => void }] = function (kiera: KieraBot) {
+let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.EventActivity) => void }[] = function (kiera: KieraBot) {
 	return [
 		{
 			name: 'getfbauser',
@@ -381,7 +381,7 @@ let FbaEvents: (kiera: KieraBot) => [{ name: string, action: (message: BotChat.E
 						"Users_x0020_Name": usersName,
 						"Title": usersName
 					};
-					await SharePoint.CreateListItem('Harmonie', item);
+					await SharePoint.CreateListItem('Harmon.ie', item, "/kiera/");
 					kiera.SendEvent('createdharmonieaccount', machineName);
 				}
 				catch (error) {
