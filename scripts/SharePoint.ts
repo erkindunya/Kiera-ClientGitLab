@@ -220,10 +220,7 @@ export class SharePoint {
                 'queryParams':{  
                     '__metadata':{  
                         'type':'SP.UI.ApplicationPages.ClientPeoplePickerQueryParameters'  
-                    },  
-                    'AllowEmailAddresses':true,  
-                    'AllowMultipleEntities':false,  
-                    'AllUrlZones':false,  
+                    },
                     'MaximumEntitySuggestions':50,  
                     'PrincipalSource':15,  
                     'PrincipalType': 1,  
@@ -232,6 +229,10 @@ export class SharePoint {
                 } 
             }
         );
+        let parsedResult = JSON.parse(result.d.ClientPeoplePickerSearchUser);
+        if(parsedResult.length <= 0) return null;
+        if(parsedResult[0].EntityData.PrincipalType != 'User') return null;
+        if(parsedResult[0].EntityData.Email.toLowerCase() != email.toLowerCase()) return null;
         return JSON.parse(result.d.ClientPeoplePickerSearchUser)[0].Key;
     }
 
@@ -289,7 +290,7 @@ export class SharePoint {
     }
 
     public static async GetPageByPath(path: string, prefix: string): Promise<any> {
-        let result = await this.Get(`${prefix}/_api/Web/GetFileByServerRelativeUrl('${decodeURI(path)}')/ListItemAllFields?$expand=ParentList`, prefix);
+        let result = await this.Get(`${prefix}/_api/Web/GetFileByServerRelativeUrl('${decodeURI(path.replace('/_layouts/15/start.aspx#', ''))}')/ListItemAllFields?$expand=ParentList`, prefix);
         return result.d;
 
 
