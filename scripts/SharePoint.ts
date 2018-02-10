@@ -279,6 +279,7 @@ export class SharePoint {
     }
 
     public static async GetWeb(url:string): Promise<string> {
+        url = url.replace('/_layouts/15/start.aspx#', '');
         let result = await this.Get(`/_api/sp.web.getweburlfrompageurl(@v)?@v='${decodeURI(url)}'`);
         return result.d.GetWebUrlFromPageUrl;
     }
@@ -290,7 +291,8 @@ export class SharePoint {
     }
 
     public static async GetPageByPath(path: string, prefix: string): Promise<any> {
-        let result = await this.Get(`${prefix}/_api/Web/GetFileByServerRelativeUrl('${decodeURI(path.replace('/_layouts/15/start.aspx#', ''))}')/ListItemAllFields?$expand=ParentList`, prefix);
+        path = path.replace('/_layouts/15/start.aspx#', '');
+        let result = await this.Get(`${prefix}/_api/Web/GetFileByServerRelativeUrl('${decodeURI(path)}')/ListItemAllFields?$expand=ParentList`, prefix);
         return result.d;
 
 
