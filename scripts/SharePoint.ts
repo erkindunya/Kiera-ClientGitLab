@@ -224,7 +224,7 @@ export class SharePoint {
                     'MaximumEntitySuggestions':50,  
                     'PrincipalSource':15,  
                     'PrincipalType': 1,  
-                    'QueryString': email,
+                    'QueryString': email.endsWith('@kier.co.uk') ? email : `fbaMembers:${email}`,
                     'Required':false
                 } 
             }
