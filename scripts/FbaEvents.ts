@@ -40,6 +40,27 @@ function modifyUser(user: any, userId: string, action: string): Promise<any> {
 	return SharePoint.UpdateListItem(user.ListName, user.Id, newItem, user.UrlPrefix);
 }
 
+function recordEvent(conversationId: string, content: string, status: string = "Closed") {
+	SharePoint.GetCurrentUserEmail().then(function(response) {
+		let item = {
+			"__metadata": {
+				"type": SharePoint.GetListItemType("Support Request")
+			},
+			"ConversationId": conversationId,
+			"Content": content,
+			"Title": response.Email,
+			"Status": status
+		};
+		SharePoint.CreateListItem('Support Request', item, '/kiera').then(function(response) {
+			console.log("Action recorded.");
+		}).catch(function (error) {
+			console.log("Action failed to record");
+		});
+	}).catch(function (error) {
+		console.log("Recording event failed.");
+	});
+}
+
 let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.EventActivity) => void }[] = function (kiera: KieraBot) {
 	return [
 		{
@@ -77,6 +98,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 									// delete message.value.OldEmail;
 									updateUser(message.value).then(result => {
 										kiera.SendEvent('updatedfbauser', message.value.Email);
+										recordEvent(message.conversation.id, "Updated FBA User");
 									}).catch(error => {
 										kiera.SendEvent('error', error);
 									});
@@ -112,6 +134,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					if (!user) {
 						createUser(message.value).then(result => {
 							kiera.SendEvent('createdfbauser', message.value.Email);
+							recordEvent(message.conversation.id, "Created FBA User");
 						}).catch(error => {
 							kiera.SendEvent('error', error);
 						});
@@ -137,6 +160,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						user.UrlPrefix = urlPrefix;
 						modifyUser(user, kiera.userId, actionName).then(result => {
 							kiera.SendEvent(message.name + 'done', message.value.Email);
+							recordEvent(message.conversation.id, `${actionName} FBA User`);
 						}).catch(error => {
 							kiera.SendEvent('error', error);
 						});
@@ -228,6 +252,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				SharePoint.AddUserToGroup(groupId, loginName, urlPrefix).then((result) => {
 					if (result) {
 						kiera.SendEvent('addedusergroup', groupId);
+						recordEvent(message.conversation.id, `Added User to Group`);
 					} else {
 						kiera.SendEvent('addtogroupfailed', groupId);
 					}
@@ -248,6 +273,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				SharePoint.RemoveUserFromGroup(groupId, loginName, urlPrefix).then((result) => {
 					if (result) {
 						kiera.SendEvent('removedusergroup', groupId);
+						recordEvent(message.conversation.id, `Removed User From Group`);
 					} else {
 						kiera.SendEvent('removefromgroupfailed', groupId);
 					}
@@ -344,6 +370,8 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 
 						await SharePoint.AddUserToGroup(group.Id, loginName, urlPrefix);
 						kiera.SendEvent('addedusergroup', group.Id);
+						
+						recordEvent(message.conversation.id, `Created Group and Assigned User`);
 					} else {
 						kiera.SendEvent('creategroupfailed', groupName);
 					}
@@ -362,6 +390,8 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let template = 'STS#0';
 					SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
 					kiera.SendEvent('createdteamsite', teamName);
+					
+					recordEvent(message.conversation.id, `Created Team Site`);
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);
@@ -416,6 +446,8 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 
 					SharePoint.CreateListItem('Projects', project, '/sites/KPC');
 					kiera.SendEvent('createdptpaccount', project.Title);
+					
+					recordEvent(message.conversation.id, `Created PTP Account`);
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);
@@ -471,6 +503,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					};
 					await SharePoint.CreateListItem('DelegateTasks', delegation, '/sites/KPC');
 					kiera.SendEvent('createddelegation', delegation.Title);
+					recordEvent(message.conversation.id, `Created PTP Delegation`);
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);
@@ -489,6 +522,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					};
 					await SharePoint.CreateListItem('PtpRestart', data, '/sites/KPC');
 					kiera.SendEvent('restartedworkflow', null);
+					recordEvent(message.conversation.id, `Restarted PTP Workflow`);
 				}
 				catch (error) {
 					kiera.SendEvent('error', error)
