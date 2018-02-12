@@ -98,7 +98,7 @@ export class SharePoint {
         let sites = [];
         for(let site of ROOT_SITES) {
             try {
-                let result = await this.Get(`${site}/_api/search/query?querytext='contentclass:sts_site'`, site);
+                let result = await this.Get(`${site}/_api/search/query?querytext='contentclass:sts_site'&rowlimit=100`, site);
                 result.d.query.PrimaryQueryResult.RelevantResults.Table.Rows.results.forEach(function (searchItem) {
                     let item = searchItem.Cells.results;
                     sites.push({
@@ -231,7 +231,7 @@ export class SharePoint {
         );
         let parsedResult = JSON.parse(result.d.ClientPeoplePickerSearchUser);
         if(parsedResult.length <= 0) return null;
-        if(parsedResult[0].EntityData.PrincipalType != 'User') return null;
+        if(parsedResult[0].EntityType != 'User') return null;
         if(parsedResult[0].EntityData.Email.toLowerCase() != email.toLowerCase()) return null;
         return JSON.parse(result.d.ClientPeoplePickerSearchUser)[0].Key;
     }
