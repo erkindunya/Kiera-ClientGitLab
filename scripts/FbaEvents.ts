@@ -414,6 +414,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					};
 					await SharePoint.CreateListItem('Harmon.ie', item, "/kiera/");
 					kiera.SendEvent('createdharmonieaccount', machineName);
+					recordEvent(message.conversation.id, `Account Added to Harmon.ie AD Group`);
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);
