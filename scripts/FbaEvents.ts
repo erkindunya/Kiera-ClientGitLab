@@ -8,6 +8,7 @@ function updateUser(user: any): Promise<any> {
 	});
 	if(newItem.ListName != 'ExternalEmployeeRegistration') {
 		newItem.EMail = newItem.Email;
+		console.log(newItem);
 		delete newItem.Email;
 	}
 	delete newItem.ListName;
@@ -73,7 +74,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						if (message.value.OldEmail != message.value.Email) {
 							SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', message.value.Email, urlPrefix).then(user => {
 								if (!user) {
-									delete message.value.OldEmail;
+									// delete message.value.OldEmail;
 									updateUser(message.value).then(result => {
 										kiera.SendEvent('updatedfbauser', message.value.Email);
 									}).catch(error => {
@@ -86,7 +87,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 								kiera.SendEvent('error', error);
 							});
 						} else {
-							delete message.value.OldEmail;
+							// delete message.value.OldEmail;
 							updateUser(message.value).then(result => {
 								kiera.SendEvent('updatedfbauser', message.value.Email);
 							}).catch(error => {

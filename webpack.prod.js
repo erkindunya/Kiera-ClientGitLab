@@ -16,7 +16,7 @@ module.exports = merge(common, {
         new webpack.DefinePlugin({
             DIRECTLINE_SECRET: JSON.stringify('uVAIRSveWlA.cwA.rC0.86qtVL1RV8zm3Hh7p3I7RZE9j5eddaK-G_l9lmFOXI8'),
             ROOT_SITES: JSON.stringify(['', 'https://mykier']),
-            DEVELOPMENT: JSON.stringify(true)
+            DEVELOPMENT: JSON.stringify(false)
         })
     ]
 });
