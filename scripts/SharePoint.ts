@@ -425,10 +425,11 @@ class Helper {
     public static EmailCapitalize(email: string): string {
         var splitEmail = email.split('@');
         var splitStart = splitEmail[0].split('.');
+        var cappedItems = [];
         splitStart.forEach((item) => {
-            item = this.capitalizeFirstLetter(item);
+            cappedItems.push(this.capitalizeFirstLetter(item));
         });
-        return splitStart.join('.') + '@' + splitEmail[1].toLowerCase();
+        return cappedItems.join('.') + '@' + splitEmail[1].toLowerCase();
         // var rg = /\W/;
         // var names = email.split(rg);
         // var firstName = this.capitalizeFirstLetter(names[0]);
