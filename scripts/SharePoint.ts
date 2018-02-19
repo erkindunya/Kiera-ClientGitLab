@@ -428,7 +428,7 @@ class Helper {
         splitStart.forEach((item) => {
             item = this.capitalizeFirstLetter(item);
         });
-        return splitStart.join('.') + splitEmail[1].toLowerCase();
+        return splitStart.join('.') + '@' + splitEmail[1].toLowerCase();
         // var rg = /\W/;
         // var names = email.split(rg);
         // var firstName = this.capitalizeFirstLetter(names[0]);
