@@ -213,7 +213,7 @@ export class SharePoint {
 
     public static async GetUserLoginName(email: string, prefix: string = ''): Promise<string> {
         // let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`);
-        let user = email.split('@')[0].toLowerCase();
+        // let user = email.split('@')[0].toLowerCase();
         // let result = await this.Get(`/_vti_bin/listdata.svc/UserInformationList?$filter=substringof('${user}',tolower(Account))`, prefix);
         let result = await this.Post(`/_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.clientPeoplePickerSearchUser`,
             {

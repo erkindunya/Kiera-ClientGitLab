@@ -510,7 +510,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						"StartDate": message.value.StartDate,
 						"EndDate": message.value.EndDate,
 						"CancelDe": message.value.ToCancel = true ? 1 : 0,
-						"Title": `${userEmail.Email} to ${userEmail.Email}`
+						"Title": `${userEmail.Email} to ${message.value.Name}`
 					};
 					await SharePoint.CreateListItem('DelegateTasks', delegation, '/sites/KPC');
 					kiera.SendEvent('createddelegation', delegation.Title);
