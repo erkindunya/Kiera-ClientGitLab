@@ -367,14 +367,14 @@ export class SharePoint {
         return await this.Post(`${prefix}/_api/web/roleassignments/addroleassignment(principalid=${groupId},roledefid=${roleId})`, {}, prefix);
     }
 
-    public static async GetUser(email) {
-        var endpoint = `/_api/web/siteusers?$filter=Email eq '${Helper.EmailCapitalize(email)}'`;
-        return await this.Get('', endpoint, true);
-    }
+    // public static async GetUser(email) {
+    //     var endpoint = `/_api/web/siteusers?$filter=Email eq '${Helper.EmailCapitalize(email)}'`;
+    //     return await this.Get('', endpoint, true);
+    // }
 
-    public static async GetEmail(Id) {
-        // https://uat-ext.kier.co.uk/_api/web/siteusers?$filter=Email%20eq%20%27Grant.Tapp@kier.co.uk%27
-    }
+    // public static async GetEmail(Id) {
+    //     // https://uat-ext.kier.co.uk/_api/web/siteusers?$filter=Email%20eq%20%27Grant.Tapp@kier.co.uk%27
+    // }
 
     public static async GetListFields(list: string, prefix: string, id: number) {
         let endpoint = `${prefix}/_api/web/lists/getbytitle('${list}')/items(${id})`
@@ -423,12 +423,18 @@ class Helper {
     }
 
     public static EmailCapitalize(email: string): string {
-        var rg = /\W/;
-        var names = email.split(rg);
-        var firstName = this.capitalizeFirstLetter(names[0]);
-        var lastName = this.capitalizeFirstLetter(names[1]);
+        var splitEmail = email.split('@');
+        var splitStart = splitEmail[0].split('.');
+        splitStart.forEach((item) => {
+            item = this.capitalizeFirstLetter(item);
+        });
+        return splitStart.join('.') + splitEmail[1].toLowerCase();
+        // var rg = /\W/;
+        // var names = email.split(rg);
+        // var firstName = this.capitalizeFirstLetter(names[0]);
+        // var lastName = this.capitalizeFirstLetter(names[1]);
 
-        return firstName + "." + lastName + "@kier.co.uk";
+        // return firstName + "." + lastName + "@kier.co.uk";
     }
 }
 
