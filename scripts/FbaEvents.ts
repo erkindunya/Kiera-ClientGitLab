@@ -388,10 +388,20 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let urlPrefix = message.value.UrlPrefix;
 					let teamName = message.value.TeamName;
 					let template = 'STS#0';
-					SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
-					kiera.SendEvent('createdteamsite', teamName);
+
+					//strip team name of invalid characters
+
+					let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
 					
-					recordEvent(message.conversation.id, `Created Team Site`);
+					if(site)
+					{
+						kiera.SendEvent('createdteamsite', teamName);
+						recordEvent(message.conversation.id, `Created Team Site`);
+					}
+					else
+					{
+						kiera.SendEvent('failedteamsite', teamName);
+					}
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);
@@ -500,7 +510,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						"StartDate": message.value.StartDate,
 						"EndDate": message.value.EndDate,
 						"CancelDe": message.value.ToCancel = true ? 1 : 0,
-						"Title": `${userEmail.Email} to ${userEmail.Email}`
+						"Title": `${userEmail.Email} to ${message.value.Name}`
 					};
 					await SharePoint.CreateListItem('DelegateTasks', delegation, '/sites/KPC');
 					kiera.SendEvent('createddelegation', delegation.Title);
