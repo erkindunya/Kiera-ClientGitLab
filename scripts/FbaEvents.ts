@@ -389,9 +389,11 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let teamName = message.value.TeamName;
 					let template = 'STS#0';
 
-					//strip team name of invalid characters
-
 					let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+					
+					await SharePoint.AddGroupToSite(site.d.ServerRelativeUrl, `${teamName} Owners`, "Group to manage the site");
+					await SharePoint.AddGroupToSite(site.d.ServerRelativeUrl, `${teamName} Visitors`, "Group to manage visitors");
+					await SharePoint.AddGroupToSite(site.d.ServerRelativeUrl, `${teamName} Members`, "Group to manage members with basic functions");
 
 					if (site) {
 						kiera.SendEvent('createdteamsite', teamName);
@@ -547,7 +549,9 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						let field = await SharePoint.GetListField('/sites/KPC', 'Projects', message.value.Column, message.value.ID);
 
 						if(field.results)
-							kiera.SendEvent('ptpquery', field.results[0])
+							kiera.SendEvent('ptpquery', field.results[0]);
+						else if(!field)
+							kiera.SendEvent('nocolumn', message.value.Column);
 						else
 							kiera.SendEvent('ptpquery', field);
 					}
