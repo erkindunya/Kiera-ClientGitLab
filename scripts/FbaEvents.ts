@@ -6,7 +6,7 @@ function updateUser(user: any): Promise<any> {
 	let newItem = $.extend({}, user, {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` }
 	});
-	if(newItem.ListName != 'ExternalEmployeeRegistration') {
+	if (newItem.ListName != 'ExternalEmployeeRegistration') {
 		newItem.EMail = newItem.Email;
 		console.log(newItem);
 		delete newItem.Email;
@@ -20,7 +20,7 @@ function createUser(user: any): Promise<any> {
 	let newItem = $.extend({}, user, {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` }
 	});
-	if(newItem.ListName != 'ExternalEmployeeRegistration') {
+	if (newItem.ListName != 'ExternalEmployeeRegistration') {
 		newItem.EMail = newItem.Email;
 		delete newItem.Email;
 	}
@@ -41,7 +41,7 @@ function modifyUser(user: any, userId: string, action: string): Promise<any> {
 }
 
 function recordEvent(conversationId: string, content: string, status: string = "Closed") {
-	SharePoint.GetCurrentUserEmail().then(function(response) {
+	SharePoint.GetCurrentUserEmail().then(function (response) {
 		let item = {
 			"__metadata": {
 				"type": SharePoint.GetListItemType("Support Request")
@@ -51,7 +51,7 @@ function recordEvent(conversationId: string, content: string, status: string = "
 			"Title": response.Email,
 			"Status": status
 		};
-		SharePoint.CreateListItem('Support Request', item, '/kiera').then(function(response) {
+		SharePoint.CreateListItem('Support Request', item, '/kiera').then(function (response) {
 			console.log("Action recorded.");
 		}).catch(function (error) {
 			console.log("Action failed to record");
@@ -70,8 +70,8 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				let listName = message.value.ListName;
 				let urlPrefix = message.value.UrlPrefix;
 				SharePoint.GetListItemByField(listName, listName == 'ExternalEmployeeRegistration' ? 'Email' : 'EMail', email, urlPrefix).then(result => {
-					if (result){
-						if(listName != 'ExternalEmployeeRegistration') {
+					if (result) {
+						if (listName != 'ExternalEmployeeRegistration') {
 							result.Email = result.EMail;
 							delete result.EMail;
 						}
@@ -370,7 +370,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 
 						await SharePoint.AddUserToGroup(group.Id, loginName, urlPrefix);
 						kiera.SendEvent('addedusergroup', group.Id);
-						
+
 						recordEvent(message.conversation.id, `Created Group and Assigned User`);
 					} else {
 						kiera.SendEvent('creategroupfailed', groupName);
@@ -392,14 +392,12 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					//strip team name of invalid characters
 
 					let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
-					
-					if(site)
-					{
+
+					if (site) {
 						kiera.SendEvent('createdteamsite', teamName);
 						recordEvent(message.conversation.id, `Created Team Site`);
 					}
-					else
-					{
+					else {
 						kiera.SendEvent('failedteamsite', teamName);
 					}
 				}
@@ -457,7 +455,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 
 					SharePoint.CreateListItem('Projects', project, '/sites/KPC');
 					kiera.SendEvent('createdptpaccount', project.Title);
-					
+
 					recordEvent(message.conversation.id, `Created PTP Account`);
 				}
 				catch (error) {
@@ -473,7 +471,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let contentObj = JSON.parse(content);
 					content = contentObj.responseJSON.error.message.value;
 				}
-				catch (error){
+				catch (error) {
 					// leave content
 				}
 
@@ -531,7 +529,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						},
 						"Title": message.value.Name
 					};
-					await SharePoint.CreateListItem('PtpRestart', data, '/sites/KPC');
+					await SharePoint.CreateListItem('PtpRestart', data, '/kiera/');
 					kiera.SendEvent('restartedworkflow', null);
 					recordEvent(message.conversation.id, `Restarted PTP Workflow`);
 				}
@@ -544,19 +542,24 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'createquery',
 			action: async (message) => {
 				try {
-					let data = {
-						"fieldData": await SharePoint.GetListField('/sites/KPC', 'Projects',  message.value.Column, message.value.ID)
-					};
+					try
+					{
+						let field = await SharePoint.GetListField('/sites/KPC', 'Projects', message.value.Column, message.value.ID);
 
-					if(data.fieldData)
-						kiera.SendEvent("ptpquery", data.fieldData);
-					else
-						kiera.SendEvent("nocolumn", message.value);
+						if(field.results)
+							kiera.SendEvent('ptpquery', field.results[0])
+						else
+							kiera.SendEvent('ptpquery', field);
+					}
+					catch(error)
+					{
+						// console.log(error);
+						if(error.status == 404)
+							kiera.SendEvent('noprojectfound', message.value.ID);
+					}
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);
-					console.log(error);
-					console.log(message);
 				}
 			}
 		}
