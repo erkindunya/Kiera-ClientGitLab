@@ -388,17 +388,25 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let urlPrefix = message.value.UrlPrefix;
 					let teamName = message.value.TeamName;
 					let template = 'STS#0';
+					let site = null;
 
-					let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+					try
+					{
+						site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+					}
+					catch(error)
+					{
+						kiera.SendEvent('sitealreadyexists', teamName);
+					}
+
 					let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
-					
 					let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
 					let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
 					let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
 
-					await SharePoint.AssignRoleToSite(ownerId, '1073741829', site.d.ServerRelativeUrl);
-					await SharePoint.AssignRoleToSite(visitorId, '1073741924', site.d.ServerRelativeUrl);
-					await SharePoint.AssignRoleToSite(memberId, '1073741827', site.d.ServerRelativeUrl);
+					await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.ServerRelativeUrl);
+					await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.ServerRelativeUrl);
+					await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.ServerRelativeUrl);
 
 					if (site) {
 						kiera.SendEvent('createdteamsite', teamName);
