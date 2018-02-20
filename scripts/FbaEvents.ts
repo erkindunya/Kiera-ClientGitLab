@@ -390,10 +390,15 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let template = 'STS#0';
 
 					let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+					let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
 					
-					await SharePoint.AddGroupToSite(site.d.ServerRelativeUrl, `${teamName} Owners`, "Group to manage the site");
-					await SharePoint.AddGroupToSite(site.d.ServerRelativeUrl, `${teamName} Visitors`, "Group to manage visitors");
-					await SharePoint.AddGroupToSite(site.d.ServerRelativeUrl, `${teamName} Members`, "Group to manage members with basic functions");
+					let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
+					let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
+					let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
+
+					await SharePoint.AssignRoleToSite(ownerId, '1073741829', site.d.ServerRelativeUrl);
+					await SharePoint.AssignRoleToSite(visitorId, '1073741924', site.d.ServerRelativeUrl);
+					await SharePoint.AssignRoleToSite(memberId, '1073741827', site.d.ServerRelativeUrl);
 
 					if (site) {
 						kiera.SendEvent('createdteamsite', teamName);

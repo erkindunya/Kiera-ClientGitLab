@@ -348,17 +348,9 @@ export class SharePoint {
         return result.d;
     }
 
-    public static async AddGroupToSite(prefix: string, title: string, description: string)
+    public static async GetParentUrl(url: string)
     {
-        prefix = prefix == "/" ? "" : prefix;        
-        let group = {
-            "__metadata": {
-                "type": "SP.Group"
-            },
-            "Title": title,
-            "Description": description
-        }
-        this.Post(`${prefix}/_api/web/SiteGroups`, group);
+        return await this.Get(url, '', true);
     }
 
     public static async AssignRoleToItem(groupId, roleId, prefix, listId, itemId) {
