@@ -395,16 +395,18 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						"Title": message.value.Title
 					};
 
-					console.log(project);
-
 					let createdProject = await SharePoint.CreateListItem('projects', project, '/sites/projects');
 
 					if(createdProject)
+					{
 						kiera.SendEvent('createdbluefinsite', project.ProjectNumber);
+						recordEvent(message.conversation.id, 'Created Bluefin site');
+					}
 					else
+					{
 						kiera.SendEvent('failedbluefinsite', project.ProjectNumber);
-
-					recordEvent(message.conversation.id, 'Created Bluefin site');
+						recordEvent(message.conversation.id, 'Failure to create bluefin site', 'Open');
+					}
 				} catch (error) {
 					kiera.SendEvent('error', error);
 				}
