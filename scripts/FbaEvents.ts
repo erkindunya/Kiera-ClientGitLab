@@ -381,6 +381,38 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			}
 		},
 		{
+			name: 'createbluefinsite',
+			action: async (message) => {
+				try {
+					let project = {
+						"__metadata": {
+							"type": SharePoint.GetListItemType('projects')
+						},
+						"Business_x0020_Unit": message.value.Business_x0020_Unit,
+						"Opportunity_x0020_number": message.value.Opportunity_x0020_number,
+						"ProjectNumber": message.value.ProjectNumber,
+						"Tender_x0020_Number": message.value.Tender_x0020_Number,
+						"Title": message.value.Title
+					};
+
+					let createdProject = await SharePoint.CreateListItem('projects', project, '/sites/projects');
+
+					if(createdProject)
+					{
+						kiera.SendEvent('createdbluefinsite', project.ProjectNumber);
+						recordEvent(message.conversation.id, 'Created Bluefin site');
+					}
+					else
+					{
+						kiera.SendEvent('failedbluefinsite', project.ProjectNumber);
+						recordEvent(message.conversation.id, 'Failure to create bluefin site', 'Open');
+					}
+				} catch (error) {
+					kiera.SendEvent('error', error);
+				}
+			}
+		},
+		{
 			name: 'createsubsite',
 			action: async (message) => {
 				try {
@@ -393,27 +425,27 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					try
 					{
 						site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+						let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
+						let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
+						let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
+						let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
+	
+						await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.ServerRelativeUrl);
+						await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.ServerRelativeUrl);
+						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.ServerRelativeUrl);
+	
+						if (site) {
+							kiera.SendEvent('createdteamsite', teamName);
+							recordEvent(message.conversation.id, `Created Team Site`);
+						}
+						else {
+							kiera.SendEvent('failedteamsite', teamName);
+						}
 					}
 					catch(error)
 					{
+
 						kiera.SendEvent('sitealreadyexists', teamName);
-					}
-
-					let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
-					let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
-					let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
-					let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
-
-					await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.ServerRelativeUrl);
-					await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.ServerRelativeUrl);
-					await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.ServerRelativeUrl);
-
-					if (site) {
-						kiera.SendEvent('createdteamsite', teamName);
-						recordEvent(message.conversation.id, `Created Team Site`);
-					}
-					else {
-						kiera.SendEvent('failedteamsite', teamName);
 					}
 				}
 				catch (error) {
