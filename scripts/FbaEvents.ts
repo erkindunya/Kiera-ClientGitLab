@@ -484,11 +484,11 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
                         "__metadata": {
                             "type": SharePoint.GetListItemType('projects')
                         },
-                        "StartWorkflow": message.value.WorkflowName
+                        "StartWorkflow": message.value.WorkFlowName
                     };
                     await SharePoint.UpdateListItem('projects', message.value.ProjectId, data, '/sites/KPC');
-                    kiera.SendEvent('startworkflow', message.value.WorkflowName);
-                    recordEvent(message.conversation.id, `Restarted PTP Workflow`);
+                    kiera.SendEvent('startworkflow', message.value.WorkFlowName);
+                    recordEvent(message.conversation.id, `Started PTP Workflow`);
                 }
                 catch (error) {
                     kiera.SendEvent('error', error)
@@ -515,8 +515,13 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						"TotalValuetoKier": message.value.TotalValuetoKier,
 						"ProjectManagerId": { results: ids },
 						"Kier_x0020_BU": message.value.Kier_x0020_BU,
-						"Kier_x0020_Division": message.value.Kier_x0020_Divison
+						"Kier_x0020_Division": message.value.Kier_x0020_Divison,
+						"NextApprovalFromId": ""
 					};
+
+					let approver = await SharePoint.GetListItemByField('ApproversDetails', 'Title', message.value.Kier_x0020_BU, '/sites/KPC');
+					let approverid = approver.ApproversId.results[0];
+					project.NextApprovalFromId = approverid;
 
 					await SharePoint.CreateListItem('Projects', project, '/sites/KPC');
 					kiera.SendEvent('createdptpaccount', project.Title);
