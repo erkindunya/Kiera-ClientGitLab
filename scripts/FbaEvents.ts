@@ -477,13 +477,32 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			}
 		},
 		{
-			name: 'createptpuser',
+			name: 'startptpworkflow',
+			action: async (message) => {
+                try {
+                    let data = {
+                        "__metadata": {
+                            "type": SharePoint.GetListItemType('projects')
+                        },
+                        "StartWorkflow": message.value.WorkflowName
+                    };
+                    await SharePoint.UpdateListItem('projects', message.value.ProjectId, data, '/sites/KPC');
+                    kiera.SendEvent('startworkflow', message.value.WorkflowName);
+                    recordEvent(message.conversation.id, `Restarted PTP Workflow`);
+                }
+                catch (error) {
+                    kiera.SendEvent('error', error)
+                }
+            }
+		},
+		{
+			name: 'createptpproject',
 			action: async (message) => {
 				try {
 					let ids = [];
 
-					for (var email in message.value.ProjectManagerId) {
-						let userid = await SharePoint.GetUserId(message.value.ProjectManagerId[email]);
+					for (var email of message.value.ProjectManagerId) {
+						let userid = await SharePoint.GetUserId(email, '/sites/kpc');
 						ids.push(userid);
 					};
 
@@ -493,17 +512,16 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						},
 						"Title": message.value.Title,
 						"CategoryDescription": message.value.CategoryDescription,
-						// "approved": message.value.Approved,
 						"TotalValuetoKier": message.value.TotalValuetoKier,
 						"ProjectManagerId": { results: ids },
 						"Kier_x0020_BU": message.value.Kier_x0020_BU,
 						"Kier_x0020_Division": message.value.Kier_x0020_Divison
 					};
 
-					SharePoint.CreateListItem('Projects', project, '/sites/KPC');
+					await SharePoint.CreateListItem('Projects', project, '/sites/KPC');
 					kiera.SendEvent('createdptpaccount', project.Title);
 
-					recordEvent(message.conversation.id, `Created PTP Account`);
+					recordEvent(message.conversation.id, `Created PTP Project`);
 				}
 				catch (error) {
 					kiera.SendEvent('error', error);

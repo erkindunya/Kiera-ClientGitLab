@@ -205,11 +205,18 @@ export class SharePoint {
         return result.d;
     }
 
-    public static async GetUserId(email: string, prefix: string = ''): Promise<number> {
-        email = Helper.EmailCapitalize(email);
-        let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`, prefix);
-        return result.d.results[0].Id;
+    public static async GetUserId(logonName: string, prefix: string = ''): Promise<any>
+    {
+        let result = await this.Post(`${prefix}/_api/web/ensureUser('${logonName}')`, {}, prefix);
+        return result.d.Id;
     }
+
+    // public static async GetUserId(email: string, prefix: string = ''): Promise<number> {
+    //     //note: id's are site specific so you will need to provide a prefix if you are having an issue when parsing this to a Person or Group field.
+    //     email = Helper.EmailCapitalize(email);
+    //     let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`, prefix);
+    //     return result.d.results[0].Id;
+    // }
 
     public static async GetUserLoginName(email: string, prefix: string = ''): Promise<string> {
         // let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`);
