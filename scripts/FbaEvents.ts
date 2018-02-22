@@ -540,11 +540,11 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				try {
 					let data = {
 						"__metadata": {
-							"type": SharePoint.GetListItemType('PtpRestart')
+							"type": SharePoint.GetListItemType('projects')
 						},
-						"Title": message.value.Name
+						"RestartWorkflow": "Restart"
 					};
-					await SharePoint.CreateListItem('PtpRestart', data, '/kiera/');
+					await SharePoint.UpdateListItem('projects', message.value.ProjectId, data, '/sites/KPC');
 					kiera.SendEvent('restartedworkflow', null);
 					recordEvent(message.conversation.id, `Restarted PTP Workflow`);
 				}
