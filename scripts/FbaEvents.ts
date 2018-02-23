@@ -2,6 +2,8 @@ import * as BotChat from 'botframework-webchat';
 import { SharePoint } from './SharePoint';
 import { KieraBot } from './kiera';
 
+declare var MYKIER_URL: string;
+
 function updateUser(user: any): Promise<any> {
 	let newItem = $.extend({}, user, {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` }
@@ -431,6 +433,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
 						let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
 	
+						// this will not work for sites outside ext
 						await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.ServerRelativeUrl);
 						await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.ServerRelativeUrl);
 						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.ServerRelativeUrl);
@@ -438,6 +441,48 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						if (site) {
 							kiera.SendEvent('createdteamsite', teamName);
 							recordEvent(message.conversation.id, `Created Team Site`);
+						}
+						else {
+							kiera.SendEvent('failedteamsite', teamName);
+						}
+					}
+					catch(error)
+					{
+
+						kiera.SendEvent('sitealreadyexists', teamName);
+					}
+				}
+				catch (error) {
+					kiera.SendEvent('error', error);
+				}
+			}
+		},
+		
+		{
+			name: 'createmykier',
+			action: async (message) => {
+				try {
+					//templates: STS#0 (Team Site) 
+					let urlPrefix = MYKIER_URL;
+					let teamName = message.value.SiteName;
+					let template = 'STS#0';
+					let site = null;
+
+					try
+					{
+						site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+						let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
+						let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
+						let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
+						let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
+	
+						await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', urlPrefix + site.d.ServerRelativeUrl);
+						await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', urlPrefix + site.d.ServerRelativeUrl);
+						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', urlPrefix + site.d.ServerRelativeUrl);
+	
+						if (site) {
+							kiera.SendEvent('createdteamsite', teamName);
+							recordEvent(message.conversation.id, `Created MyKier Site`);
 						}
 						else {
 							kiera.SendEvent('failedteamsite', teamName);
