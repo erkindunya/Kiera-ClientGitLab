@@ -293,8 +293,9 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				// let path = message.value.Path;
 				let email = message.value.Email;
 				try {
-					let loginName = await SharePoint.GetUserLoginName(email)
-					if (loginName) {
+					let user = await SharePoint.GetUserLoginName(email);
+					if (user) {
+						let loginName = user.LoginName;
 						let prefix = await SharePoint.GetWeb(fullUrl);
 						let result = await SharePoint.GetPageByPath(path, prefix);
 						if (result) {

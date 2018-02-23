@@ -218,7 +218,7 @@ export class SharePoint {
     //     return result.d.results[0].Id;
     // }
 
-    public static async GetUserLoginName(email: string, prefix: string = ''): Promise<string> {
+    public static async GetUserLoginName(email: string, prefix: string = ''): Promise<any> {
         // let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`);
         // let user = email.split('@')[0].toLowerCase();
         // let result = await this.Get(`/_vti_bin/listdata.svc/UserInformationList?$filter=substringof('${user}',tolower(Account))`, prefix);
@@ -239,8 +239,11 @@ export class SharePoint {
         let parsedResult = JSON.parse(result.d.ClientPeoplePickerSearchUser);
         if(parsedResult.length <= 0) return null;
         if(parsedResult[0].EntityType != 'User') return null;
-        if(parsedResult[0].EntityData.Email.toLowerCase() != email.toLowerCase()) return null;
-        return JSON.parse(result.d.ClientPeoplePickerSearchUser)[0].Key;
+        // if(parsedResult[0].EntityData.Email.toLowerCase() != email.toLowerCase()) return null;
+        return {
+            LoginName: parsedResult[0].Key,
+            Email: parsedResult[0].EntityData.Email.toLowerCase()
+        };
     }
 
     public static async GetUserGroups(loginName: string, prefix: string = ''): Promise<any> {
