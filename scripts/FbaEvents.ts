@@ -463,20 +463,12 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					//templates: STS#0 (Team Site) 
 					let urlPrefix = MYKIER_URL;
 					let teamName = message.value.SiteName;
-					let template = 'STS#0';
-					let site = null;
+					let template = 'CMSPUBLISHING#0';
 
 					try
 					{
-						site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
-						let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
-						let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
-						let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
-						let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
-	
-						await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.Url);
-						await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.Url);
-						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.Url);
+						// dont create groups for my kier
+						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
 	
 						if (site) {
 							kiera.SendEvent('createdteamsite', teamName);
