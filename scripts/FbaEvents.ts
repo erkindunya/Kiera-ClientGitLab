@@ -179,7 +179,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			action: async (message) => {
 				let actionName = message.name.replace('get', 'set');
 				let teamName = message.value.TeamName;
-				SharePoint.GetSubSites().then(sites => {
+				SharePoint.GetSites().then(sites => {
 					if (sites) {
 						kiera.SendEvent(actionName, {
 							Sites: sites,
@@ -203,7 +203,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					if (!loginName) {
 						kiera.SendEvent('nouserfound', email);
 					} else if (loginName.Email === email.toLowerCase()) {
-						SharePoint.GetSubSites().then(sites => {
+						SharePoint.GetSites().then(sites => {
 							if (sites) {
 								kiera.SendEvent(actionName, {
 									LoginName: loginName.LoginName,

@@ -94,7 +94,7 @@ export class SharePoint {
         });
     }
 
-    public static async GetSubSites() {
+    public static async GetSites() {
         let sites = [];
         for(let site of ROOT_SITES) {
             try {
