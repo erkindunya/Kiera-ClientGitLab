@@ -175,21 +175,41 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			}
 		},
 		{
-			name: 'getsites|getusersites|getsitecollections|getsubsite',
+			name: 'getsitecollections|getsubsite',
 			action: async (message) => {
-				let currentEmail = await SharePoint.GetCurrentUserEmail();
-				currentEmail = currentEmail.Email;
-				let email = message.value.Email || currentEmail;
+				let actionName = message.name.replace('get', 'set');
+				let teamName = message.value.TeamName;
+				SharePoint.GetSubSites().then(sites => {
+					if (sites) {
+						kiera.SendEvent(actionName, {
+							Sites: sites,
+							TeamName: teamName
+						});
+					} else {
+						kiera.SendEvent('nositesfound', '');
+					}
+				}).catch(error => {
+					kiera.SendEvent('error', error);
+				});
+			}
+		},
+		{
+			name: 'getsites|getusersites',
+			action: async (message) => {
+				let email: string = message.value.Email;
 				let actionName = message.name.replace('get', 'set');
 				let teamName = message.value.TeamName;
 				SharePoint.GetUserLoginName(email).then((loginName) => {
-					if (loginName) {
+					if (!loginName) {
+						kiera.SendEvent('nouserfound', email);
+					} else if (loginName.Email === email.toLowerCase()) {
 						SharePoint.GetSubSites().then(sites => {
 							if (sites) {
 								kiera.SendEvent(actionName, {
-									LoginName: loginName,
+									LoginName: loginName.LoginName,
 									Sites: sites,
-									TeamName: teamName
+									TeamName: teamName,
+									Email: loginName.Email
 								});
 							} else {
 								kiera.SendEvent('nositesfound', '');
@@ -198,7 +218,15 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							kiera.SendEvent('error', error);
 						});
 					} else {
-						kiera.SendEvent('nouserfound', email);
+						// check if email correct, and if so, return to action passing email merged with state
+						kiera.SendEvent('confirmuser', {
+							LoginName: loginName.LoginName,
+							Email: loginName.Email,
+							ActionName: message.name,
+							State: {
+								TeamName: message.value.TeamName
+							}
+						});
 					}
 				}).catch(error => {
 					kiera.SendEvent('error', error);
