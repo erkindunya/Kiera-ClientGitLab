@@ -235,6 +235,10 @@ export class SharePoint {
         // let result = await this.Get(`${prefix}/_api/web/siteusers?$filter=Email eq '${email}'`);
         // let user = email.split('@')[0].toLowerCase();
         // let result = await this.Get(`/_vti_bin/listdata.svc/UserInformationList?$filter=substringof('${user}',tolower(Account))`, prefix);
+        let query = email;
+        if(!email.toLowerCase().endsWith('@kier.co.uk') && email.includes('@')) {
+            query = `fbaMembers:${email}`;
+        }
         let result = await this.Post(`/_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.clientPeoplePickerSearchUser`,
             {
                 'queryParams':{  
@@ -244,7 +248,7 @@ export class SharePoint {
                     'MaximumEntitySuggestions':50,  
                     'PrincipalSource':15,  
                     'PrincipalType': 1,  
-                    'QueryString': email.toLowerCase().endsWith('@kier.co.uk') ? email : `fbaMembers:${email}`,
+                    'QueryString': query,
                     'Required':false
                 } 
             }
