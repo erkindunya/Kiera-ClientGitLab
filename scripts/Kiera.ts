@@ -6,7 +6,7 @@ import SearchEvents from './SearchEvents';
 import * as CognitiveServices from 'botframework-webchat/CognitiveServices';
 import swal from 'sweetalert2';
 
-// webpack provided
+// webpack provided here
 declare var DIRECTLINE_SECRET: string;
 
 export class KieraBot {
