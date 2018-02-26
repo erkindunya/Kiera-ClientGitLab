@@ -327,13 +327,14 @@ export class SharePoint {
             return null;
     }
 
-    public static async CreateSubsite(prefix: string, title: string, url: string, webTemplate: string) {
+    public static async CreateSubsite(prefix: string, title: string, url: string, webTemplate: string, useSamePermissionsAsParentSite: boolean = false) {
         prefix = prefix == "/" ? "" : prefix;
         let result = await this.Post(`${prefix}/_api/web/webs/add`, {
             parameters: {
                 Title: title,
                 Url: url,
-                WebTemplate: webTemplate
+                WebTemplate: webTemplate,
+                UseSamePermissionsAsParentSite: useSamePermissionsAsParentSite
             }
         }, prefix);
 
