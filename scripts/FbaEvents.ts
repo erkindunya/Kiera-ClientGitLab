@@ -198,7 +198,6 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			action: async (message) => {
 				let email: string = message.value.Email;
 				let actionName = message.name.replace('get', 'set');
-				let teamName = message.value.TeamName;
 				SharePoint.GetUserLoginName(email).then((loginName) => {
 					if (!loginName) {
 						kiera.SendEvent('nouserfound', email);
@@ -208,7 +207,6 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 								kiera.SendEvent(actionName, {
 									LoginName: loginName.LoginName,
 									Sites: sites,
-									TeamName: teamName,
 									Email: loginName.Email
 								});
 							} else {
@@ -227,6 +225,25 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 								TeamName: message.value.TeamName
 							}
 						});
+					}
+				}).catch(error => {
+					kiera.SendEvent('error', error);
+				});
+			}
+		},
+		{
+			name: 'getsubsites',
+			action: async (message) => {
+				let loginName: string = message.value.LoginName;
+				let urlPrefix: string = message.value.UrlPrefix;
+				SharePoint.GetSubSites(urlPrefix).then(sites => {
+					if (sites) {
+						kiera.SendEvent("setsites", {
+							LoginName: loginName,
+							Sites: sites
+						});
+					} else {
+						kiera.SendEvent('nositesfound', '');
 					}
 				}).catch(error => {
 					kiera.SendEvent('error', error);
@@ -496,7 +513,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					try
 					{
 						// dont create groups for my kier
-						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
+						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template, true);
 	
 						if (site) {
 							kiera.SendEvent('createdteamsite', teamName);

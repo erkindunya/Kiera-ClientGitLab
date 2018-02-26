@@ -94,6 +94,19 @@ export class SharePoint {
         });
     }
 
+    public static async GetSubSites(prefix: string = '') {
+        let sites = [];
+        let result = await this.Get(`${prefix}/_api/web/webs`);
+        result.d.results.forEach(function (site) {
+            sites.push({
+                WorkId: 0,
+                Title: site.Title,
+                Path: site.Url
+            });
+        });
+        return sites;
+    }
+
     public static async GetSites() {
         let sites = [];
         for(let site of ROOT_SITES) {
