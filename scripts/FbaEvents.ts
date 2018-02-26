@@ -333,7 +333,8 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'geturlgroups',
 			action: async (message) => {
 				let fullUrl = message.value.Path;
-				let path = message.value.Path.replace(/^.*\/\/[^\/]+/, '').split('?')[0];
+				fullUrl = fullUrl.replace('http://', 'https://');
+				let path = fullUrl.replace(/^.*\/\/[^\/]+/, '').split('?')[0];
 				// let prefix = path.startsWith('/sites') ? path.split("/").slice(0, 3).join("/") : "";
 				// console.log(path);
 				// console.log(prefix);
@@ -341,11 +342,36 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				let email = message.value.Email;
 				try {
 					let user = await SharePoint.GetUserLoginName(email);
-					if (user) {
+					if (!user) {
+						kiera.SendEvent('nouserfound', email);
+					} else if (user.Email === email.toLowerCase()) {
 						let loginName = user.LoginName;
 						let prefix = await SharePoint.GetWeb(fullUrl);
-						let result = await SharePoint.GetPageByPath(path, prefix);
-						if (result) {
+						let isSite = false;
+						if(prefix.toLowerCase().endsWith(path.toLowerCase())) isSite = true;
+
+						let result = null;
+						if(!isSite) {
+							result = await SharePoint.GetPageByPath(path, prefix);
+							if (!result || !result.ListItemAllFields) isSite = true;
+						}
+
+						// if it ends with the same then its not a list item but a site
+						if(isSite) {
+							SharePoint.GetSiteGroups(prefix).then(groups => {
+								if (groups) {
+									kiera.SendEvent('setgroups', {
+										LoginName: loginName,
+										Groups: groups,
+										UrlPrefix: prefix
+									});
+								} else {
+									kiera.SendEvent('nogroupsfound', prefix);
+								}
+							}).catch(error => {
+								kiera.SendEvent('error', error);
+							});
+						} else { // otherwise its a list item
 							kiera.SendEvent('pagefound', path);
 							let groups = await SharePoint.GetListGroups(result.ParentList.Id, prefix);
 							if (groups) {
@@ -359,11 +385,17 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							} else {
 								kiera.SendEvent('nogroupsfound', loginName);
 							}
-						} else {
-							kiera.SendEvent('nopagefound', path);
 						}
 					} else {
-						kiera.SendEvent('nouserfound', email);
+						// check if email correct, and if so, return to action passing email merged with state
+						kiera.SendEvent('confirmuser', {
+							LoginName: user.LoginName,
+							Email: user.Email,
+							ActionName: message.name,
+							State: {
+								Path: message.value.Path
+							}
+						});
 					}
 				} catch (error) {
 					kiera.SendEvent('error', error);
