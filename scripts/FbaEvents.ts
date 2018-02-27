@@ -111,7 +111,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 								kiera.SendEvent('error', error);
 							});
 						} else {
-							// delete message.value.OldEmail;
+							// delete message.value.OldEmail; 
 							updateUser(message.value).then(result => {
 								kiera.SendEvent('updatedfbauser', message.value.Email);
 							}).catch(error => {
