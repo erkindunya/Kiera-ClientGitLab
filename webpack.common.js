@@ -5,8 +5,8 @@ var babelOptions = {
     ]
 };
 
-
 module.exports = {
+    devtool: 'source-map',
     entry: [
         'babel-polyfill',
         "./scripts/Kiera.ts",
