@@ -741,6 +741,8 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						// console.log(error);
 						if(error.status == 404)
 							kiera.SendEvent('noprojectfound', message.value.ID);
+						else
+							kiera.SendEvent('error', error);
 					}
 				}
 				catch (error) {
