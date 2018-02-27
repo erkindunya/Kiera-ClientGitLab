@@ -727,10 +727,11 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				try {
 					try
 					{
-						let field = await SharePoint.GetListField('/sites/KPC', 'Projects', message.value.Column, message.value.ID);
+						let result = await SharePoint.GetListFields('/sites/KPC', 'Projects', message.value.ID);
+						let field = result[message.value.Column];
 
 						if(!field)
-							kiera.SendEvent('nocolumn', message.value.Column);
+							kiera.SendEvent('nocolumn', { Column: message.value.Column, ID: message.value.ID, Title: result.Title });
 						else if(field.results)
 							kiera.SendEvent('ptpquery', field.results[0]);
 						else
