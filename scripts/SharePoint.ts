@@ -18,9 +18,9 @@ export class SharePoint {
 
     private static ajax(options: any): Promise<any> {
         return new Promise(function(resolve, reject) {
-          $.ajax(options).done(resolve).fail(reject);
+            $.ajax(options).done(resolve).fail(reject);
         });
-      }
+    }
 
     private static async Get(url: string, prefix: string = "", requiresDigest: boolean = false): Promise<any> {
         let formDigest = requiresDigest ? await this.GetFormDigest(prefix) : null;
@@ -96,7 +96,7 @@ export class SharePoint {
 
     public static async GetSubSites(prefix: string = '') {
         let sites = [];
-        let result = await this.Get(`${prefix}/_api/web/webs`);
+        let result = await this.Get(`${prefix}/_api/web/webs?$filter=effectivebasepermissions/high%20gt%2032`);
         result.d.results.forEach(function (site) {
             sites.push({
                 WorkId: 0,
