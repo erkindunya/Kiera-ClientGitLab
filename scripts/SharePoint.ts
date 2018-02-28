@@ -18,9 +18,9 @@ export class SharePoint {
 
     private static ajax(options: any): Promise<any> {
         return new Promise(function(resolve, reject) {
-          $.ajax(options).done(resolve).fail(reject);
+            $.ajax(options).done(resolve).fail(reject);
         });
-      }
+    }
 
     private static async Get(url: string, prefix: string = "", requiresDigest: boolean = false): Promise<any> {
         let formDigest = requiresDigest ? await this.GetFormDigest(prefix) : null;

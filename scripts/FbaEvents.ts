@@ -733,9 +733,19 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						if(!field)
 							kiera.SendEvent('nocolumn', { Column: message.value.Column, ID: message.value.ID, Title: result.Title });
 						else if(field.results)
-							kiera.SendEvent('ptpquery', field.results[0]);
+							kiera.SendEvent('ptpquery', {
+								Column: message.value.Column,
+								Result: field.results[0],
+								Title: result.Title,
+								ID: message.value.ID
+							});
 						else
-							kiera.SendEvent('ptpquery', field);
+							kiera.SendEvent('ptpquery', {
+								Column: message.value.Column,
+								Result: field,
+								Title: result.Title,
+								ID: message.value.ID
+							});
 					}
 					catch(error)
 					{
