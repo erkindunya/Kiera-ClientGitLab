@@ -517,7 +517,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.Url);
 	
 						if (site) {
-							kiera.SendEvent('createdteamsite', teamName);
+							kiera.SendEvent('createdteamsite', site.d.Url);
 							recordEvent(message.conversation.id, `Created Team Site`);
 						}
 						else {
@@ -551,7 +551,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template, true);
 	
 						if (site) {
-							kiera.SendEvent('createdteamsite', teamName);
+							kiera.SendEvent('createdteamsite', site.d.Url);
 							recordEvent(message.conversation.id, `Created MyKier Site`);
 						}
 						else {
