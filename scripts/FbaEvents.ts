@@ -4,6 +4,8 @@ import { KieraBot } from './kiera';
 
 declare var MYKIER_URL: string;
 
+let previousSites: any;
+
 function updateUser(user: any): Promise<any> {
 	let newItem = $.extend({}, user, {
 		'__metadata': { 'type': `${SharePoint.GetListItemType(user.ListName)}` }
@@ -237,13 +239,18 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				let loginName: string = message.value.LoginName;
 				let urlPrefix: string = message.value.UrlPrefix;
 				SharePoint.GetSubSites(urlPrefix).then(sites => {
-					if (sites) {
+					if (sites && sites.length > 0) {
+						previousSites = sites;
 						kiera.SendEvent("setsites", {
 							LoginName: loginName,
 							Sites: sites
 						});
 					} else {
-						kiera.SendEvent('nositesfound', '');
+						console.log("no sub sites");
+						kiera.SendEvent('nosubsites', {
+							LoginName: loginName,
+							Sites: previousSites
+						});
 					}
 				}).catch(error => {
 					kiera.SendEvent('error', error);
