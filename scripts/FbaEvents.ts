@@ -727,7 +727,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				try {
 					try
 					{
-						let result = await SharePoint.GetListFields('/sites/KPC', 'Projects', message.value.ID);
+						let result = await SharePoint.GetListFields('Projects', '/sites/KPC', message.value.ID);
 						let field = result[message.value.Column];
 
 						if(!field)
