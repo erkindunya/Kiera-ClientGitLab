@@ -237,7 +237,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				let loginName: string = message.value.LoginName;
 				let urlPrefix: string = message.value.UrlPrefix;
 				SharePoint.GetSubSites(urlPrefix).then(sites => {
-					if (sites) {
+					if (sites && sites.length > 0) {
 						kiera.SendEvent("setsites", {
 							LoginName: loginName,
 							Sites: sites
