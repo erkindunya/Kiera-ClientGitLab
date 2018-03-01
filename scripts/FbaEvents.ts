@@ -732,51 +732,69 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'createquery',
 			action: async (message) => {
 				try {
-					try
-					{
-						let column = message.value.Column;
-						let id = message.value.ID;
-						let columnTitle = message.value.ColumnTitle;
-						let result = await SharePoint.GetListFields('Projects', '/sites/KPC', message.value.ID);
-						let field = result[message.value.Column];
+					let column = message.value.Column;
+					let id = message.value.ID;
+					let columnTitle = message.value.ColumnTitle;
+					let result = await SharePoint.GetListFields('Projects', '/sites/KPC', message.value.ID);
+					let field = result[message.value.Column];
 
-						let title = result.Title;
+					let title = result.Title;
 
-						if(!field)
-							kiera.SendEvent('nocolumn', {
-								Column: column,
-								ID: id,
-								Title: title,
-								ColumnTitle: columnTitle
-							});
-						else if(field.results)
-							kiera.SendEvent('ptpquery', {
-								Column: column,
-								ColumnTitle: columnTitle,
-								Result: field.results[0],
-								Title: title,
-								ID: id
-							});
-						else
-							kiera.SendEvent('ptpquery', {
-								Column: column,
-								ColumnTitle: columnTitle,
-								Result: field,
-								Title: title,
-								ID: id
-							});
-					}
-					catch(error)
-					{
-						// console.log(error);
-						if(error.status == 404)
-							kiera.SendEvent('noprojectfound', message.value.ID);
-						else
-							kiera.SendEvent('error', error);
-					}
+					if (!field)
+						kiera.SendEvent('nocolumn', {
+							Column: column,
+							ID: id,
+							Title: title,
+							ColumnTitle: columnTitle
+						});
+					else if (field.results)
+						kiera.SendEvent('ptpquery', {
+							Column: column,
+							ColumnTitle: columnTitle,
+							Result: field.results[0],
+							Title: title,
+							ID: id
+						});
+					else
+						kiera.SendEvent('ptpquery', {
+							Column: column,
+							ColumnTitle: columnTitle,
+							Result: field,
+							Title: title,
+							ID: id
+						});
 				}
 				catch (error) {
-					kiera.SendEvent('error', error);
+					// console.log(error);
+					if (error.status == 404)
+						kiera.SendEvent('noprojectfound', message.value.ID);
+					else
+						kiera.SendEvent('error', error);
+				}
+			}
+		},
+		{
+			name: 'setptpvalue',
+			action: async (message) => {
+				try {
+					let column = message.value.Column;
+					let id = message.value.ID;
+					let newValue = message.value.NewValue;
+
+					let newItem = {
+						'__metadata': { 'type': `${SharePoint.GetListItemType('Projects')}` }
+					};
+					newItem[column] = newValue;
+					let result = await SharePoint.UpdateListItem('Projects', id, newItem, '/sites/KPC');
+					kiera.SendEvent('ptpvalueupdated', '');
+					recordEvent(message.conversation.id, `Updated PTP List ${id}, Set '${column}' to ${newValue}`);
+				}
+				catch (error) {
+					// console.log(error);
+					if (error.status == 404)
+						kiera.SendEvent('noprojectfound', message.value.ID);
+					else
+						kiera.SendEvent('error', error);
 				}
 			}
 		}
