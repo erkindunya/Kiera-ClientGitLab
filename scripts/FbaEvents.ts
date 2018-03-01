@@ -179,12 +179,16 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			action: async (message) => {
 				let actionName = message.name.replace('get', 'set');
 				let teamName = message.value.TeamName;
+				console.log(actionName);
 				SharePoint.GetSites().then(sites => {
 					if (sites) {
 						kiera.SendEvent(actionName, {
-							Sites: sites,
-							TeamName: teamName
+							Sites: sites
 						});
+						// kiera.SendEvent(actionName, {
+						// 	Sites: sites,
+						// 	TeamName: teamName
+						// });
 					} else {
 						kiera.SendEvent('nositesfound', '');
 					}
