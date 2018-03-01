@@ -725,6 +725,25 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			}
 		},
 		{
+			name: 'stopworkflow',
+			action: async (message) => {
+				try {
+					let data = {
+						"__metadata": {
+							"type": SharePoint.GetListItemType('projects')
+						},
+						"RestartWorkflow": "Stop"
+					};
+					await SharePoint.UpdateListItem('projects', message.value.ProjectId, data, '/sites/KPC');
+					kiera.SendEvent('stoppedworkflow', null);
+					recordEvent(message.conversation.id, `Stopped PTP Workflow`);
+				}
+				catch (error) {
+					kiera.SendEvent('error', error)
+				}
+			}
+		},
+		{
 			name: 'createquery',
 			action: async (message) => {
 				try {
