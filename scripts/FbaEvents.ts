@@ -753,6 +753,10 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let result = await SharePoint.GetListFields('Projects', '/sites/KPC', message.value.ID);
 					let field = result[message.value.Column];
 
+					if(column.endsWith('Id') && field && !field.results) {
+						field = await SharePoint.GetUserTitleById(field, '/sites/kpc');
+					}
+
 					let title = result.Title;
 
 					if (!field)

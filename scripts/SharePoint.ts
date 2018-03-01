@@ -218,10 +218,16 @@ export class SharePoint {
         return result.d;
     }
 
-    public static async GetUserId(logonName: string, prefix: string = ''): Promise<any>
+    public static async GetUserId(logonName: string, prefix: string = ''): Promise<number>
     {
         let result = await this.Post(`${prefix}/_api/web/ensureUser('${logonName}')`, {}, prefix);
         return result.d.Id;
+    }
+
+    public static async GetUserTitleById(id: number, prefix: string): Promise<string>
+    {
+        let result = await this.Get(`${prefix}/_api/web/getuserbyid(${id})`, prefix);
+        return result.d.Title;
     }
 
     // public static async GetUserId(email: string, prefix: string = ''): Promise<number> {
