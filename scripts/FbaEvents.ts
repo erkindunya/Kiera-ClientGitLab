@@ -179,16 +179,12 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			action: async (message) => {
 				let actionName = message.name.replace('get', 'set');
 				let teamName = message.value.TeamName;
-				console.log(actionName);
 				SharePoint.GetSites().then(sites => {
 					if (sites) {
 						kiera.SendEvent(actionName, {
-							Sites: sites
+							Sites: sites,
+							TeamName: teamName
 						});
-						// kiera.SendEvent(actionName, {
-						// 	Sites: sites,
-						// 	TeamName: teamName
-						// });
 					} else {
 						kiera.SendEvent('nositesfound', '');
 					}
@@ -239,9 +235,17 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'getsubsites',
 			action: async (message) => {
 				let loginName: string = message.value.LoginName;
+				let teamName: string = message.value.TeamName;
 				let urlPrefix: string = message.value.UrlPrefix;
 				SharePoint.GetSubSites(urlPrefix).then(sites => {
 					if (sites && sites.length > 0) {
+						if(!loginName){
+							kiera.SendEvent("setsubsite", {
+								Sites: sites,
+								UrlPrefix: urlPrefix,
+								TeamName: teamName
+							});
+						}
 						kiera.SendEvent("setsites", {
 							LoginName: loginName,
 							Sites: sites
