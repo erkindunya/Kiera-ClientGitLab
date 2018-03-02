@@ -775,7 +775,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							Title: title,
 							ColumnTitle: columnTitle
 						});
-					else if (field.results)
+					else if (field.results) // shouldn't be any cases at the moment, left in for future features
 						kiera.SendEvent('ptpquery', {
 							Column: column,
 							ColumnTitle: columnTitle,
