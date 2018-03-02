@@ -251,13 +251,17 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						else {
 							kiera.SendEvent("setsites", {
 								LoginName: loginName,
-								Sites: sites
+								Sites: sites,
 							});
 						}
 					} else {
+						if(!loginName)
+							loginName = "";
 						kiera.SendEvent('nosubsites', {
 							LoginName: loginName,
-							UrlPrefix: urlPrefix
+							UrlPrefix: urlPrefix,
+							TeamName: teamName,
+							Sites: sites
 						});
 					}
 				}).catch(error => {
