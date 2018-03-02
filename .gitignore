@@ -3,4 +3,5 @@ bundle-test.js
 bundle.js
 bundle.css
 bundle-test.css
+*.map
 npm-debug.log
