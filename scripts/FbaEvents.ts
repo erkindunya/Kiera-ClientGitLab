@@ -178,13 +178,13 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'getsitecollections|getsubsite',
 			action: async (message) => {
 				let actionName = message.name.replace('get', 'set');
-				let teamName = message.value.TeamName;
+				// let teamName = message.value.TeamName;
 				console.log(message);
 				SharePoint.GetSites().then(sites => {
 					if (sites) {
 						kiera.SendEvent(actionName, {
 							Sites: sites,
-							TeamName: teamName
+							// TeamName: teamName
 						});
 					} else {
 						kiera.SendEvent('nositesfound', '');
@@ -223,7 +223,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							Email: loginName.Email,
 							ActionName: message.name,
 							State: {
-								TeamName: message.value.TeamName
+								// TeamName: message.value.TeamName
 							}
 						});
 					}
@@ -236,7 +236,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'getsubsites',
 			action: async (message) => {
 				let loginName: string = message.value.LoginName;
-				let teamName: string = message.value.TeamName;
+				// let teamName: string = message.value.TeamName;
 				let urlPrefix: string = message.value.UrlPrefix;
 				console.log(message);
 				SharePoint.GetSubSites(urlPrefix).then(sites => {
@@ -245,7 +245,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							kiera.SendEvent("setsubsites", {
 								Sites: sites,
 								UrlPrefix: urlPrefix,
-								TeamName: teamName
+								// TeamName: teamName
 							});
 						}
 						else {
@@ -260,7 +260,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						kiera.SendEvent('nosubsites', {
 							LoginName: loginName,
 							UrlPrefix: urlPrefix,
-							TeamName: teamName,
+							// TeamName: teamName,
 							Sites: sites
 						});
 					}
@@ -512,38 +512,39 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 		{
 			name: 'createsubsite',
 			action: async (message) => {
+				let urlPrefix = message.value.UrlPrefix;
+				let siteName = message.value.SiteName;
 				try {
 					//templates: STS#0 (Team Site) 
 					let urlPrefix = message.value.UrlPrefix;
-					let teamName = message.value.TeamName;
+					let siteName = message.value.SiteName;
 					let template = 'STS#0';
 
-					try {
-						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
-						let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
-						let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
-						let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
-						let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
+					var groupRegex = new RegExp('[^a-zA-Z0-9 -]', 'g');
+					let groupName = siteName.replace(groupRegex, '');
 
-						await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.Url);
-						await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.Url);
-						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.Url);
+					let slug = siteName.toLowerCase().replace(new RegExp(' ', 'g'), '-').replace(groupRegex, '');
 
-						if (site) {
-							kiera.SendEvent('createdteamsite', site.d.Url);
-							recordEvent(message.conversation.id, `Created Team Site`);
-						}
-						else {
-							kiera.SendEvent('failedteamsite', teamName);
-						}
+					let site = await SharePoint.CreateSubsite(urlPrefix, siteName, slug, template);
+
+					let ownerId = await SharePoint.CreateGroup(urlPrefix, `${groupName} Owners`);
+					let visitorId = await SharePoint.CreateGroup(urlPrefix, `${groupName} Visitors`);
+					let memberId = await SharePoint.CreateGroup(urlPrefix, `${groupName} Members`);
+
+					await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.Url);
+					await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.Url);
+					await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.Url);
+
+					if (site) {
+						kiera.SendEvent('createdteamsite', site.d.Url);
+						recordEvent(message.conversation.id, `Created Team Site`);
 					}
-					catch (error) {
-
-						kiera.SendEvent('sitealreadyexists', teamName);
+					else {
+						kiera.SendEvent('failedteamsite', siteName);
 					}
 				}
 				catch (error) {
-					kiera.SendEvent('error', error);
+					kiera.SendEvent('sitealreadyexists', siteName);
 				}
 			}
 		},
@@ -554,24 +555,27 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				try {
 					//templates: STS#0 (Team Site) 
 					let urlPrefix = MYKIER_URL;
-					let teamName = message.value.SiteName;
+					let siteName = message.value.SiteName;
 					let template = 'CMSPUBLISHING#0';
 
 					try {
+						var groupRegex = new RegExp('[^a-zA-Z0-9 -]', 'g');
+
+						let slug = siteName.toLowerCase().replace(new RegExp(' ', 'g'), '-').replace(groupRegex, '');
 						// dont create groups for my kier
-						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template, true);
+						let site = await SharePoint.CreateSubsite(urlPrefix, siteName, slug, template, true);
 
 						if (site) {
 							kiera.SendEvent('createdteamsite', site.d.Url);
 							recordEvent(message.conversation.id, `Created MyKier Site`);
 						}
 						else {
-							kiera.SendEvent('failedteamsite', teamName);
+							kiera.SendEvent('failedteamsite', siteName);
 						}
 					}
 					catch (error) {
 
-						kiera.SendEvent('sitealreadyexists', teamName);
+						kiera.SendEvent('sitealreadyexists', siteName);
 					}
 				}
 				catch (error) {
