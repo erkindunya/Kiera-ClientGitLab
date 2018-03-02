@@ -757,7 +757,20 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let id = message.value.ID;
 					let columnTitle = message.value.ColumnTitle;
 					let result = await SharePoint.GetListFields('Projects', '/sites/KPC', message.value.ID);
-					let field = result[message.value.Column];
+					let field = result[column];
+
+					if(!field && column.startsWith('PTP')) {
+						column = column
+									.replace('PTPN', 'PTPIN')
+									.replace('PTPA', 'PTPIA')
+									.replace('Originator0', 'Originator')
+									.replace('Originator3', 'Originator');
+						field = result[column];
+					}
+
+					if(column.endsWith('Id') && field && !field.results) {
+						field = await SharePoint.GetUserTitleById(field, '/sites/kpc');
+					}
 
 					let title = result.Title;
 
