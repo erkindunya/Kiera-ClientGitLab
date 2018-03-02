@@ -179,6 +179,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			action: async (message) => {
 				let actionName = message.name.replace('get', 'set');
 				let teamName = message.value.TeamName;
+				console.log(message);
 				SharePoint.GetSites().then(sites => {
 					if (sites) {
 						kiera.SendEvent(actionName, {
@@ -235,13 +236,24 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			name: 'getsubsites',
 			action: async (message) => {
 				let loginName: string = message.value.LoginName;
+				let teamName: string = message.value.TeamName;
 				let urlPrefix: string = message.value.UrlPrefix;
+				console.log(message);
 				SharePoint.GetSubSites(urlPrefix).then(sites => {
 					if (sites && sites.length > 0) {
-						kiera.SendEvent("setsites", {
-							LoginName: loginName,
-							Sites: sites
-						});
+						if (!loginName) {
+							kiera.SendEvent("setsubsites", {
+								Sites: sites,
+								UrlPrefix: urlPrefix,
+								TeamName: teamName
+							});
+						}
+						else {
+							kiera.SendEvent("setsites", {
+								LoginName: loginName,
+								Sites: sites
+							});
+						}
 					} else {
 						kiera.SendEvent('nosubsites', {
 							LoginName: loginName,
@@ -351,16 +363,16 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 						let loginName = user.LoginName;
 						let prefix = await SharePoint.GetWeb(fullUrl);
 						let isSite = false;
-						if(prefix.toLowerCase().endsWith(path.toLowerCase())) isSite = true;
+						if (prefix.toLowerCase().endsWith(path.toLowerCase())) isSite = true;
 
 						let result = null;
-						if(!isSite) {
+						if (!isSite) {
 							result = await SharePoint.GetPageByPath(path, prefix);
 							if (!result || !result.ListItemAllFields) isSite = true;
 						}
 
 						// if it ends with the same then its not a list item but a site
-						if(isSite) {
+						if (isSite) {
 							SharePoint.GetSiteGroups(prefix).then(groups => {
 								if (groups) {
 									kiera.SendEvent('setgroups', {
@@ -480,13 +492,11 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 
 					let createdProject = await SharePoint.CreateListItem('projects', project, '/sites/projects');
 
-					if(createdProject)
-					{
+					if (createdProject) {
 						kiera.SendEvent('createdbluefinsite', project.ProjectNumber);
 						recordEvent(message.conversation.id, 'Created Bluefin site');
 					}
-					else
-					{
+					else {
 						kiera.SendEvent('failedbluefinsite', project.ProjectNumber);
 						recordEvent(message.conversation.id, 'Failure to create bluefin site', 'Open');
 					}
@@ -504,18 +514,17 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let teamName = message.value.TeamName;
 					let template = 'STS#0';
 
-					try
-					{
+					try {
 						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template);
 						let parentUrl = await SharePoint.GetParentUrl(site.d.ParentWeb.__deferred.uri);
 						let ownerId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Owners`);
 						let visitorId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Visitors`);
 						let memberId = await SharePoint.CreateGroup(urlPrefix, `${teamName} Members`);
-	
+
 						await SharePoint.AssignRoleToSite(ownerId.Id, '1073741829', site.d.Url);
 						await SharePoint.AssignRoleToSite(visitorId.Id, '1073741924', site.d.Url);
 						await SharePoint.AssignRoleToSite(memberId.Id, '1073741827', site.d.Url);
-	
+
 						if (site) {
 							kiera.SendEvent('createdteamsite', site.d.Url);
 							recordEvent(message.conversation.id, `Created Team Site`);
@@ -524,8 +533,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							kiera.SendEvent('failedteamsite', teamName);
 						}
 					}
-					catch(error)
-					{
+					catch (error) {
 
 						kiera.SendEvent('sitealreadyexists', teamName);
 					}
@@ -535,7 +543,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 				}
 			}
 		},
-		
+
 		{
 			name: 'createmykier',
 			action: async (message) => {
@@ -545,11 +553,10 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 					let teamName = message.value.SiteName;
 					let template = 'CMSPUBLISHING#0';
 
-					try
-					{
+					try {
 						// dont create groups for my kier
 						let site = await SharePoint.CreateSubsite(urlPrefix, teamName, teamName, template, true);
-	
+
 						if (site) {
 							kiera.SendEvent('createdteamsite', site.d.Url);
 							recordEvent(message.conversation.id, `Created MyKier Site`);
@@ -558,8 +565,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							kiera.SendEvent('failedteamsite', teamName);
 						}
 					}
-					catch(error)
-					{
+					catch (error) {
 
 						kiera.SendEvent('sitealreadyexists', teamName);
 					}
@@ -595,21 +601,21 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 		{
 			name: 'startptpworkflow',
 			action: async (message) => {
-                try {
-                    let data = {
-                        "__metadata": {
-                            "type": SharePoint.GetListItemType('projects')
-                        },
-                        "StartWorkflow": message.value.WorkFlowName
-                    };
-                    await SharePoint.UpdateListItem('projects', message.value.ProjectId, data, '/sites/KPC');
-                    kiera.SendEvent('startworkflow', message.value.WorkFlowName);
-                    recordEvent(message.conversation.id, `Started PTP Workflow`);
-                }
-                catch (error) {
-                    kiera.SendEvent('error', error)
-                }
-            }
+				try {
+					let data = {
+						"__metadata": {
+							"type": SharePoint.GetListItemType('projects')
+						},
+						"StartWorkflow": message.value.WorkFlowName
+					};
+					await SharePoint.UpdateListItem('projects', message.value.ProjectId, data, '/sites/KPC');
+					kiera.SendEvent('startworkflow', message.value.WorkFlowName);
+					recordEvent(message.conversation.id, `Started PTP Workflow`);
+				}
+				catch (error) {
+					kiera.SendEvent('error', error)
+				}
+			}
 		},
 		{
 			name: 'createptpproject',
