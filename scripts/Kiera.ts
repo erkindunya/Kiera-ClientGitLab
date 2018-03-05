@@ -16,6 +16,9 @@ export class KieraBot {
     userId: string;
     public isInitialised: boolean = false;
 
+    lastUserMessage: number;
+    lastBotMessage: number;
+
     constructor() {
         this.botConnection = new BotChat.DirectLine({
             secret: DIRECTLINE_SECRET
@@ -38,6 +41,61 @@ export class KieraBot {
                 return false;
             })
             .subscribe(action.bind(this));
+    }
+
+    public HandleTyping(): void {
+        this.botConnection.activity$
+            .filter((message, index) => {
+                if (message.type === "message")
+                    return true;
+                return false;
+            })
+            .subscribe((message: BotChat.Activity) => {
+                console.log(message);
+                if(!message.id) return;
+                const messageSections = message.id.split("|");
+                if(messageSections.length <= 1) return;
+                const messageId = parseInt(messageSections[1]);
+
+                if(message.from.id == this.botUser)
+                    this.lastUserMessage = messageId;
+                else
+                    this.lastBotMessage = messageId;
+
+                if(this.lastUserMessage > this.lastBotMessage)
+                    this.AddTyping();
+                else
+                    this.RemoveTyping();
+            });
+    }
+
+    public RemoveTyping(): void {
+        $("#kiera-typing-indicator").remove();
+        $(".wc-textbox input.wc-shellinput").prop("disabled", false);
+    }
+
+    public AddTyping(): void {
+        const typingIndicatorHtml = `
+            <div id="kiera-typing-indicator" class="wc-message-group-content" style="margin-top: 0px;">
+                <div class="wc-message-wrapper list">
+                    <div class="wc-message wc-message-from-bot">
+                        <div class="wc-message-content">
+                            <svg class="wc-message-callout">
+                                <path class="point-left" d="m0,6 l6 6 v-12 z"></path>
+                                <path class="point-right" d="m6,6 l-6 6 v-12 z"></path>
+                            </svg>
+                            <div class="wc-typing"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        const $typing = $(typingIndicatorHtml);
+        const $container = $(".wc-message-groups");
+        if($("#kiera-typing-indicator").length == 0) {
+            $container.append($typing);
+            $container.animate({ scrollTop: $container.prop("scrollHeight") - $container.height() }, 0);
+        }
     }
 
     public SendEvent(name: string, data: any): void {
@@ -85,6 +143,9 @@ export class KieraBot {
             bot: { id: 'KieraBot', name: 'Kiera' },
             speechOptions: this.speechOptions
         }, document.getElementById("bot"));
+
+        this.HandleTyping();
+        this.AddTyping();
 
         $("#aspnetForm").submit(function(event){
             event.preventDefault();
