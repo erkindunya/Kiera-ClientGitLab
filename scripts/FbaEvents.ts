@@ -255,8 +255,6 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 							});
 						}
 					} else {
-						if(!loginName)
-							loginName = "";
 						kiera.SendEvent('nosubsites', {
 							LoginName: loginName,
 							UrlPrefix: urlPrefix,
