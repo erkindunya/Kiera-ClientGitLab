@@ -552,7 +552,7 @@ let FbaEvents: (kiera: KieraBot) => { name: string, action: (message: BotChat.Ev
 			action: async (message) => {
 				try {
 					//templates: STS#0 (Team Site) 
-					let urlPrefix = MYKIER_URL;
+					let urlPrefix = message.value.UrlPrefix;
 					let siteName = message.value.SiteName;
 					let template = 'CMSPUBLISHING#0';
 
