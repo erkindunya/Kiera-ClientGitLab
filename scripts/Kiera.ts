@@ -71,7 +71,7 @@ export class KieraBot {
 
     public RemoveTyping(): void {
         $("#kiera-typing-indicator").remove();
-        $(".wc-textbox input.wc-shellinput").prop("disabled", false);
+        // $(".wc-textbox input.wc-shellinput").prop("disabled", false);
     }
 
     public AddTyping(): void {
@@ -90,6 +90,7 @@ export class KieraBot {
                 </div>
             </div>
         `;
+        // $(".wc-textbox input.wc-shellinput").prop("disabled", true);
         const $typing = $(typingIndicatorHtml);
         const $container = $(".wc-message-groups");
         if($("#kiera-typing-indicator").length == 0) {
