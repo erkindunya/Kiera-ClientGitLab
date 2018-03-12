@@ -152,6 +152,7 @@ export class SharePoint {
 
     public static async AddUserToGroup(groupId: number, loginName: string, prefix: string = '') {
         prefix = prefix == "/" ? "" : prefix;
+        await this.Post(`${prefix}/_api/web/ensureUser('${loginName}')`, {}, prefix);
         return await this.Post(`${prefix}/_api/web/sitegroups(${groupId})/users`, {
             __metadata: { type: 'SP.User' },
             LoginName: loginName
