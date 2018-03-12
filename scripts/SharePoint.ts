@@ -152,7 +152,7 @@ export class SharePoint {
 
     public static async AddUserToGroup(groupId: number, loginName: string, prefix: string = '') {
         prefix = prefix == "/" ? "" : prefix;
-        await this.Post(`${prefix}/_api/web/ensureUser('${loginName}')`, {}, prefix);
+        await this.Post(`${prefix}/_api/web/ensureUser(@v)?@v='${encodeURIComponent(loginName)}'`, {}, prefix);
         return await this.Post(`${prefix}/_api/web/sitegroups(${groupId})/users`, {
             __metadata: { type: 'SP.User' },
             LoginName: loginName
@@ -219,9 +219,9 @@ export class SharePoint {
         return result.d;
     }
 
-    public static async GetUserId(logonName: string, prefix: string = ''): Promise<number>
+    public static async GetUserId(loginName: string, prefix: string = ''): Promise<number>
     {
-        let result = await this.Post(`${prefix}/_api/web/ensureUser('${logonName}')`, {}, prefix);
+        let result = await this.Post(`${prefix}/_api/web/ensureUser(@v)?@v='${encodeURIComponent(loginName)}'`, {}, prefix);
         return result.d.Id;
     }
 
